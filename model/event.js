@@ -1,5 +1,14 @@
+export const RECCURENCE = {
+    WEEKLY: "weekly",
+    BI_WEEKLY: "bi-weekly",
+    DAILY: "daily",
+    MONTHLY: "monthly",
+    BI_MONTHLY: "bi-monthly",
+    YEARLY: "yearly"
+}
+
 //Comments and photos are loaded on demand (with the getComments(), getPhotos())
-class Event {
+export class Event {
     constructor(id, location, name, reccurence, author, controller) {
         this.id = id;
         this.location = location;
@@ -8,14 +17,14 @@ class Event {
         this.author = author;
         this.controller = controller;
     }
-    getComments() {
+    get comments() {
         if (this.comments) {
             return this.comments;
         } else {
             //faire le call à la db via l'api
         }
     }
-    getPhotos() {
+    get photos() {
         if(this.photos) {
             return this.photos;
         } else {
