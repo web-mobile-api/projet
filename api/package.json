@@ -6,5 +6,10 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/web-mobile-api/projet.git"
+    },
+    "type": "module",
+    "dependencies": {
+        "express": "^4.21.2",
+        "internal-ip": "^8.0.0"
     }
 }
