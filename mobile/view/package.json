@@ -1,0 +1,50 @@
+{
+  "name": "theeventapp",
+  "license": "0BSD",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^14.0.2",
+    "@react-native-async-storage/async-storage": "^2.1.0",
+    "@react-native-community/datetimepicker": "^8.2.0",
+    "@react-native-community/geolocation": "^3.4.0",
+    "@react-native-community/slider": "^4.5.5",
+    "@react-native-picker/picker": "^2.10.2",
+    "@react-navigation/bottom-tabs": "^7.0.14",
+    "@react-navigation/native": "^7.0.4",
+    "@react-navigation/stack": "^7.0.7",
+    "crypto": "^1.0.1",
+    "expo": "~52.0.9",
+    "expo-image-picker": "~16.0.3",
+    "expo-location": "~18.0.3",
+    "expo-status-bar": "~2.0.0",
+    "lottie-react-native": "7.1.0",
+    "react": "18.3.1",
+    "react-native": "0.76.2",
+    "react-native-actionsheet": "^2.4.2",
+    "react-native-calendars": "^1.1307.0",
+    "react-native-geolocation-service": "^5.3.1",
+    "react-native-get-random-values": "^1.11.0",
+    "react-native-google-places-autocomplete": "^2.5.7",
+    "react-native-image-picker": "^7.2.2",
+    "react-native-maps": "^1.20.1",
+    "react-native-modal-datetime-picker": "^18.0.0",
+    "react-native-paper": "^5.12.5",
+    "react-native-permissions": "^5.2.0",
+    "react-native-safe-area-context": "^4.14.0",
+    "react-native-uuid": "^2.0.3",
+    "react-native-vector-icons": "^10.2.0",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@react-native-community/cli": "latest"
+  },
+  "private": true
+}
