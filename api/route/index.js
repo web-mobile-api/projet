@@ -1,9 +1,7 @@
 import {Router} from 'express';
-import {default as productRouter} from './product.js';
-import {default as purchaseRouter} from './purchase.js';
+import {default as accountRouter} from './account.js'
 const router = Router();
 
-router.use('/product', productRouter);
-router.use('/purchase', purchaseRouter);
+router.use('/account', accountRouter)
 
 export default router;

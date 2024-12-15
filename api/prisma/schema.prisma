@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Account {
+  account_id                                Int          @id @default(autoincrement())
+  first_name                                String
+  last_name                                 String
+  password                                  String
+  email                                     String
+  phone_number                              String
+  birthdate                                 DateTime     @db.Date
+  Comment                                   Comment[]
+  Event                                     Event[]
+  FriendList_FriendList_friend1_idToAccount FriendList[] @relation("FriendList_friend1_idToAccount")
+  FriendList_FriendList_friend2_idToAccount FriendList[] @relation("FriendList_friend2_idToAccount")
+}
+
+model Comment {
+  comment_id Int      @id @default(autoincrement())
+  content    String
+  date_      DateTime @db.Date
+  author_id  Int?
+  Account    Account? @relation(fields: [author_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Event {
+  event_id    Int       @id @default(autoincrement())
+  position_id Int?
+  author_id   Int?
+  name_       String
+  date_       DateTime  @db.Date
+  reccurence  String
+  Account     Account?  @relation(fields: [author_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
+  Location    Location? @relation(fields: [position_id], references: [location_id], onDelete: NoAction, onUpdate: NoAction)
+  Photo       Photo[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model FriendList {
+  friend_list_id                         Int      @id @default(autoincrement())
+  friend1_id                             Int?
+  friend2_id                             Int?
+  date_                                  DateTime @db.Date
+  Account_FriendList_friend1_idToAccount Account? @relation("FriendList_friend1_idToAccount", fields: [friend1_id], references: [account_id], onDelete: Cascade)
+  Account_FriendList_friend2_idToAccount Account? @relation("FriendList_friend2_idToAccount", fields: [friend2_id], references: [account_id], onDelete: Cascade)
+}
+
+model Location {
+  location_id Int     @id @default(autoincrement())
+  address     String?
+  position    String?
+  Event       Event[]
+}
+
+model Photo {
+  path     String
+  photo_id Int    @id @default(autoincrement())
+  event_id Int?
+  Event    Event? @relation(fields: [event_id], references: [event_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model client {
+  id        Int        @id @default(autoincrement())
+  name      String?    @db.VarChar
+  firstname String?    @db.VarChar
+  address   String?    @db.VarChar
+  email     String?    @unique @db.VarChar
+  password  String?    @db.VarChar
+  purchase  purchase[]
+}
+
+model product {
+  id       Int        @id @default(autoincrement())
+  name     String?
+  price    Decimal?   @db.Decimal
+  purchase purchase[]
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model purchase {
+  product_id Int
+  client_id  Int
+  quantity   Int?
+  date       DateTime @default(now()) @db.Date
+  client     client   @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  product    product  @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([product_id, client_id, date])
+}
