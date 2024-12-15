@@ -10,8 +10,13 @@ DROP TABLE IF EXISTS "UpVote";
 -- Create Location table
 CREATE TABLE "Location" (
     location_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    address TEXT,
-    position TEXT
+    street TEXT,
+    num integer,
+    city TEXT,
+    code integer,
+    country TEXT, 
+    position TEXT UNIQUE,
+    CONSTRAINT location_composite_unique UNIQUE (street, num, country, city, code)
 );
 
 -- Create Account table

@@ -55,9 +55,15 @@ model FriendList {
 
 model Location {
   location_id Int     @id @default(autoincrement())
-  address     String?
-  position    String?
+  street      String?
+  num         Int?
+  city        String?
+  code        Int?
+  country     String?
+  position    String? @unique
   Event       Event[]
+
+  @@unique([street, num, country, city, code], map: "location_composite_unique")
 }
 
 model Photo {

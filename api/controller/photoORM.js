@@ -1,6 +1,6 @@
 import prisma from "../database/databaseORM.js";
 
-export const getAccount = async (req, res)=> {
+export const getPhoto = async (req, res)=> {
     try {
         const account = await prisma.account.findUnique({
             where: {
@@ -18,7 +18,7 @@ export const getAccount = async (req, res)=> {
     }
 };
 
-export const addAccount = async (req, res) => {
+export const addPhoto = async (req, res) => {
     try {
         const {first_name, last_name, password, email, phone_number, birthdate} = req.body;
         const {account_id} = await prisma.account.create({
@@ -41,9 +41,9 @@ export const addAccount = async (req, res) => {
     }
 };
 
-export const updateAccount = async (req, res) => {
+export const updatePhoto = async (req, res) => {
     try {
-        const {account_id, first_name, last_name, password, email, phone_number, birthdate} = req.body;
+        const {first_name, last_name, password, email, phone_number, birthdate} = req.body;
         await prisma.account.update({
             data: {
                 first_name,
@@ -54,7 +54,7 @@ export const updateAccount = async (req, res) => {
                 birthdate: (new Date(birthdate)).toISOString()
             },
             where: {
-                account_id
+                id
             }
         });
         res.sendStatus(204);
@@ -65,11 +65,11 @@ export const updateAccount = async (req, res) => {
 };
 
 //Will be changed for a transaction later
-export const deleteAccount = async (req, res) => {
+export const deletePhoto = async (req, res) => {
     try {
         await prisma.account.delete({
             where: {
-                account_id: parseInt(req.params.id)
+                id: parseInt(req.params.id)
             }
         });
         res.sendStatus(204);
