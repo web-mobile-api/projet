@@ -31,6 +31,8 @@ export const addAccount = async (req, res) => {
                 phone_number,
                 birthdate: (new Date(birthdate)).toISOString(),
                 profile_picture: profile_picture === undefined ? 1 : profile_picture,
+                online: false,
+                last_online: undefined
             },
             select: {
                 account_id: true

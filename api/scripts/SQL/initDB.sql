@@ -40,30 +40,32 @@ CREATE TABLE "Account" (
     phone_number TEXT NOT NULL,
     birthdate DATE NOT NULL,
     profile_picture INTEGER REFERENCES "Photo"(photo_id) NOT NULL,
+    online bool,
+    last_online DATE,
     CONSTRAINT chk_email_format CHECK (email LIKE '%_@_%.__%')
 );
 
-INSERT into "Account"(first_name, last_name, password, email, phone_number, birthdate, profile_picture)
-VALUES ('Julien', 'Higginson', 'password-password', 'J.H.Gipson62@gmail.com', '0488221444', '06-01-2004', 1);
+INSERT into "Account"(first_name, last_name, password, email, phone_number, birthdate, profile_picture, online, last_online)
+VALUES ('Julien', 'Higginson', 'password-password', 'J.H.Gipson62@gmail.com', '0488221444', '06-01-2004', 1, true, null);
 
 -- Create FriendList table
 CREATE TABLE "FriendList" (
     friend_list_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     friend1_id INTEGER REFERENCES "Account"(account_id) ON UPDATE CASCADE ON DELETE CASCADE,
     friend2_id INTEGER REFERENCES "Account"(account_id) ON UPDATE CASCADE ON DELETE CASCADE,
-    date_ DATE NOT NULL,
+    date DATE NOT NULL,
     CONSTRAINT chk_friend_ids CHECK (friend1_id <> friend2_id)
 );
 
 -- Create Event table
 CREATE TABLE "Event" (
     event_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    position_id INTEGER REFERENCES "Location"(location_id),
+    location_id INTEGER REFERENCES "Location"(location_id),
     author_id INTEGER REFERENCES "Account"(account_id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    name_ TEXT NOT NULL,
-    date_ DATE NOT NULL,
-    reccurence TEXT NOT NULL,
+    name TEXT NOT NULL,
+    date DATE NOT NULL,
+    reccurence TEXT,
     CONSTRAINT chk_reccurence_name CHECK (
         reccurence IN ('weekly', 'bi-weekly', 'daily', 'monthly', 'bi-monthly', 'yearly')
     )
@@ -73,8 +75,9 @@ CREATE TABLE "Event" (
 CREATE TABLE "Comment" (
     comment_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     content TEXT NOT NULL,
-    date_ DATE NOT NULL,
-    author_id INTEGER REFERENCES "Account"(account_id)
+    date DATE NOT NULL,
+    author_id INTEGER REFERENCES "Account"(account_id),
+    event_id INTEGER REFERENCES "Event"(event_id)
 );
 
 -- Create EventPhoto table

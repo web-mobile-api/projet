@@ -42,9 +42,9 @@ export const addLocation = async (req, res) => {
         const { location_id } = await prisma.location.create({
             data: {
                 street,
-                num,
+                num: parseInt(num),
                 city,
-                code,
+                code: parseInt(code),
                 country,
                 position
             },

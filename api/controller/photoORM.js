@@ -55,7 +55,7 @@ export const getPhotoByPath = async (req, res)=> {
 export const addPhoto = async (req, res) => {
     try {
         console.log(req.file)
-        const { filename, path: filePath } = req.file;
+        const { filename, path: _filePath } = req.file;
     
         const photo = await prisma.photo.create({
             data: {

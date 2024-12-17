@@ -21,16 +21,17 @@ export const getFriendList = async (req, res)=> {
 export const addFriendShip = async (req, res) => {
     try {
         const { friend1_id, friend2_id } = req.body;
-        const { account_id } = await prisma.friendList.create({
+        const { friend_list_id } = await prisma.friendList.create({
             data: {
                 friend1_id,
-                friend2_id
+                friend2_id,
+                date_: new Date(Date.now()).toISOString()
             },
             select: {
                 friend_list_id: true
             }
         });
-        res.status(201).send({account_id});
+        res.status(201).send({friend_list_id});
     } catch (err) {
         console.error(err);
         res.sendStatus(500);
