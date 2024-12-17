@@ -39,6 +39,9 @@ export const getEventsFrom = async(req, res) => {
             },
             include: {
                 Event: true
+            },
+            select: {
+
             }
         })
         if (events) {
@@ -63,12 +66,17 @@ export const getEvent = async (req, res)=> {
             include: {
                 Comment: true,
                 EventPhoto: true,
-                Location: true
+                Location: true,
+                ParticipantList: {
+                    select: {
+                        account_id: true
+                    }
+                },
             },
         });
         if(event){
             //just so it doesn't get confusing cuz we already have event.Location.location_id
-            delete event["position_id"]
+            delete event["location_id"]
             res.send(event);
         } else {
             res.sendStatus(404);

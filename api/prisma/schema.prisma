@@ -9,27 +9,28 @@ datasource db {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Account {
-  account_id                                Int          @id @default(autoincrement())
+  account_id                                Int               @id @default(autoincrement())
   first_name                                String
   last_name                                 String
   password                                  String
-  email                                     String
+  email                                     String            @unique
   phone_number                              String
-  birthdate                                 DateTime     @db.Date
+  birthdate                                 DateTime          @db.Date
   profile_picture                           Int
   online                                    Boolean?
-  last_online                               DateTime?    @db.Date
-  Photo                                     Photo        @relation(fields: [profile_picture], references: [photo_id], onDelete: NoAction, onUpdate: NoAction)
+  last_online                               DateTime?         @db.Timestamp(6)
+  Photo                                     Photo             @relation(fields: [profile_picture], references: [photo_id], onDelete: NoAction, onUpdate: NoAction)
   Comment                                   Comment[]
   Event                                     Event[]
-  FriendList_FriendList_friend1_idToAccount FriendList[] @relation("FriendList_friend1_idToAccount")
-  FriendList_FriendList_friend2_idToAccount FriendList[] @relation("FriendList_friend2_idToAccount")
+  FriendList_FriendList_friend1_idToAccount FriendList[]      @relation("FriendList_friend1_idToAccount")
+  FriendList_FriendList_friend2_idToAccount FriendList[]      @relation("FriendList_friend2_idToAccount")
+  ParticipantList                           ParticipantList[]
 }
 
 model Comment {
   comment_id Int      @id @default(autoincrement())
   content    String
-  date       DateTime @db.Date
+  date       DateTime @db.Timestamp(6)
   author_id  Int?
   event_id   Int?
   Account    Account? @relation(fields: [author_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
@@ -38,17 +39,18 @@ model Comment {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Event {
-  event_id    Int          @id @default(autoincrement())
-  location_id Int?
-  author_id   Int?
-  created_at  DateTime?    @default(now()) @db.Timestamptz(6)
-  name        String
-  date        DateTime     @db.Date
-  reccurence  String?
-  Comment     Comment[]
-  Account     Account?     @relation(fields: [author_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
-  Location    Location?    @relation(fields: [location_id], references: [location_id], onDelete: NoAction, onUpdate: NoAction)
-  EventPhoto  EventPhoto[]
+  event_id        Int               @id @default(autoincrement())
+  location_id     Int?
+  author_id       Int?
+  created_at      DateTime?         @default(now()) @db.Timestamptz(6)
+  name            String
+  date            DateTime          @db.Timestamp(6)
+  reccurence      String?
+  Comment         Comment[]
+  Account         Account?          @relation(fields: [author_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
+  Location        Location?         @relation(fields: [location_id], references: [location_id], onDelete: NoAction, onUpdate: NoAction)
+  EventPhoto      EventPhoto[]
+  ParticipantList ParticipantList[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -56,7 +58,7 @@ model FriendList {
   friend_list_id                         Int      @id @default(autoincrement())
   friend1_id                             Int?
   friend2_id                             Int?
-  date                                   DateTime @db.Date
+  date                                   DateTime @db.Timestamp(6)
   Account_FriendList_friend1_idToAccount Account? @relation("FriendList_friend1_idToAccount", fields: [friend1_id], references: [account_id], onDelete: Cascade)
   Account_FriendList_friend2_idToAccount Account? @relation("FriendList_friend2_idToAccount", fields: [friend2_id], references: [account_id], onDelete: Cascade)
 }
@@ -117,4 +119,20 @@ model purchase {
   product    product  @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([product_id, client_id, date])
+}
+
+model ParticipantList {
+  account_id Int
+  event_id   Int
+  Account    Account @relation(fields: [account_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
+  Event      Event   @relation(fields: [event_id], references: [event_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([account_id, event_id])
+}
+
+model Admin {
+  admin_id Int    @id @default(autoincrement())
+  name     String @db.VarChar
+  email    String @unique @db.VarChar
+  password String @db.VarChar
 }

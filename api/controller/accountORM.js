@@ -1,4 +1,5 @@
 import prisma from "../database/databaseORM.js";
+import { exclude } from "../scripts/JS/omitField.js";
 
 export const getAccount = async (req, res)=> {
     try {
@@ -8,7 +9,8 @@ export const getAccount = async (req, res)=> {
             }
         });
         if(account){
-            res.send(account);
+            const accountWithoutPassword = exclude(account, ['password'])
+            res.send(accountWithoutPassword);
         } else {
             res.sendStatus(404);
         }
@@ -27,7 +29,7 @@ export const addAccount = async (req, res) => {
                 first_name,
                 last_name,
                 password,
-                email,
+                email: email.toLowerCase(),
                 phone_number,
                 birthdate: (new Date(birthdate)).toISOString(),
                 profile_picture: profile_picture === undefined ? 1 : profile_picture,
