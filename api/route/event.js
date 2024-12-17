@@ -1,20 +1,21 @@
 import Router from "express-promise-router";
 import {
     addEvent,
-    //updateEvent,
-    //deleteEvent,,
+    updateEvent,
+    deleteEvent,
     getEventsFrom,
     getEvent,
     getAllEvents
 } from "../controller/eventORM.js";
+import { authenticateAdmin, authenticateToken } from "../scripts/JS/authMiddleware.js";
 
 const router = Router();
 
-router.post("/", addEvent);
-router.get("/from/:account_id", getEventsFrom);
-//router.patch("/:id", updateEvent);
-router.get("/id/:id", getEvent);
-router.get("/", getAllEvents); //Should return {id, position}[]
-//router.delete("/:id", deleteEvent);
+router.post("/", authenticateToken, addEvent);
+router.get("/from/:account_id", authenticateToken, getEventsFrom);
+router.patch("/:id", authenticateToken, authenticateAdmin, updateEvent);
+router.get("/id/:id", authenticateToken, getEvent);
+router.get("/", authenticateToken, getAllEvents);
+router.delete("/:id", authenticateToken, authenticateAdmin, deleteEvent);
 
 export default router;

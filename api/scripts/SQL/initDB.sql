@@ -46,7 +46,7 @@ CREATE TABLE "Account" (
 );
 
 INSERT into "Account"(first_name, last_name, password, email, phone_number, birthdate, profile_picture, online, last_online)
-VALUES ('Julien', 'Higginson', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi', 'J.H.Gipson62@gmail.com', '0488221444', '06-01-2004', 1, true, null);
+VALUES ('Julien', 'Higginson', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi', 'j.h.gipson62@gmail.com', '0488221444', '06-01-2004', 1, true, null);
 -- The password is generated with Bcrypt and salt=10 "password"
 
 -- Create Admin table
@@ -58,10 +58,10 @@ CREATE TABLE "Admin" (
 );
 
 INSERT INTO "Admin" (name, email, password)
-VALUES ('Antoine', 'antoine@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$Zlt4ajEyoZ2T9JZeo6fqfQ$N3u7B55JfJti5sEKl0mYbKRRgid2bxzk1XYGbNVJjRk');
+VALUES ('Antoine', 'antoine@mail.com', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi');
 
 INSERT INTO "Admin" (name, email, password)
-VALUES ('Julien', 'j.h.gipson62@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$Zlt4ajEyoZ2T9JZeo6fqfQ$N3u7B55JfJti5sEKl0mYbKRRgid2bxzk1XYGbNVJjRk');
+VALUES ('Julien', 'j.h.gipson62@mail.com', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi');
 
 -- Create FriendList table
 CREATE TABLE "FriendList" (

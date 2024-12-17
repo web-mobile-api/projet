@@ -5,6 +5,7 @@ import {
     deleteFriendShip,
     getFriendList
 } from "../controller/friendListORM.js";
+import { authenticateAdmin, authenticateToken } from "../scripts/JS/authMiddleware.js";
 
 const router = Router();
 

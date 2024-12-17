@@ -7,6 +7,7 @@ import {
     deleteLocationById,
     deleteLocationByPosition
 } from "../controller/locationORM.js";
+import { authenticateAdmin, authenticateToken } from "../scripts/JS/authMiddleware.js";
 
 const router = Router();
 

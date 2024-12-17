@@ -111,7 +111,7 @@ export const addEvent = async (req, res) => {
     }
 };
 
-export const updateAccount = async (req, res) => {
+export const updateEvent = async (req, res) => {
     try {
         const { event_id, location_id, author_id, name, date, reccurence } = req.body;
         await prisma.event.update({
@@ -133,8 +133,7 @@ export const updateAccount = async (req, res) => {
     }
 };
 
-//Will be changed for a transaction later
-export const deleteAccount = async (req, res) => {
+export const deleteEvent = async (req, res) => {
     try {
         await prisma.event.delete({
             where: {

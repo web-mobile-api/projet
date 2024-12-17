@@ -1,4 +1,5 @@
 import prisma from "../database/databaseORM.js";
+import { Permission } from "../scripts/JS/authMiddleware.js";
 
 export const getComment = async (req, res)=> {
     try {
@@ -60,12 +61,26 @@ export const addComment = async (req, res) => {
 
 export const deleteComment = async (req, res) => {
     try {
-        await prisma.comment.delete({
+        const account = await prisma.account.findUnique({
             where: {
-                comment_id: parseInt(req.params.id)
+                email: req.user.email,
             }
         });
-        res.sendStatus(204);
+        const comment = await prisma.comment.findUnique({
+            where: {
+                comment_id: req.params.id
+            }
+        });
+        if ((account && comment) && (req.perm === Permission.Admin || account.account_id === comment.author_id)) {
+            await prisma.comment.delete({
+                where: {
+                    comment_id: parseInt(req.params.id)
+                }
+            });
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(403)
+        }
     } catch (e) {
         console.error(e);
         res.sendStatus(500);

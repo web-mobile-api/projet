@@ -7,6 +7,7 @@ import {
     deletePhoto,
     upload
 } from "../controller/photoORM.js";
+import { authenticateAdmin, authenticateToken } from "../scripts/JS/authMiddleware.js";
 
 const router = Router();
 
