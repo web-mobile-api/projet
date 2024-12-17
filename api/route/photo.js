@@ -4,17 +4,16 @@ import {
     updatePhoto,
     getPhotoById,
     getPhotoByPath,
-    deletePhotoById,
-    deletePhotoByPath
+    deletePhoto,
+    upload
 } from "../controller/photoORM.js";
 
 const router = Router();
 
-router.post("/", addPhoto);
+router.post("/", upload.single("photo"), addPhoto);
 router.patch("/", updatePhoto);
 router.get("/id/:id", getPhotoById);
-router.get("/path/:path", getPhotoByPath);
-router.delete("/id/:id", deletePhotoById);
-router.delete("/path/:path", deletePhotoByPath)
+router.get("/uploads/:filename", getPhotoByPath);
+router.delete("/:id", deletePhoto);
 
 export default router;

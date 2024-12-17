@@ -18,17 +18,19 @@ export const getAccount = async (req, res)=> {
     }
 };
 
+//This could become a transaction or we just put a default pfp
 export const addAccount = async (req, res) => {
     try {
-        const {first_name, last_name, password, email, phone_number, birthdate} = req.body;
-        const {account_id} = await prisma.account.create({
+        const { first_name, last_name, password, email, phone_number, birthdate, profile_picture } = req.body;
+        const { account_id } = await prisma.account.create({
             data: {
                 first_name,
                 last_name,
                 password,
                 email,
                 phone_number,
-                birthdate: (new Date(birthdate)).toISOString()
+                birthdate: (new Date(birthdate)).toISOString(),
+                profile_picture: profile_picture === undefined ? 1 : profile_picture,
             },
             select: {
                 account_id: true
@@ -43,7 +45,7 @@ export const addAccount = async (req, res) => {
 
 export const updateAccount = async (req, res) => {
     try {
-        const {account_id, first_name, last_name, password, email, phone_number, birthdate} = req.body;
+        const { account_id, first_name, last_name, password, email, phone_number, birthdate } = req.body;
         await prisma.account.update({
             data: {
                 first_name,

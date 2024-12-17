@@ -20,8 +20,8 @@ export const getFriendList = async (req, res)=> {
 
 export const addFriendShip = async (req, res) => {
     try {
-        const {friend1_id, friend2_id} = req.body;
-        const {account_id} = await prisma.friendList.create({
+        const { friend1_id, friend2_id } = req.body;
+        const { account_id } = await prisma.friendList.create({
             data: {
                 friend1_id,
                 friend2_id
@@ -39,7 +39,7 @@ export const addFriendShip = async (req, res) => {
 
 export const updateFriendShip = async (req, res) => {
     try {
-        const {friend1_id, friend2_id} = req.body;
+        const { friend1_id, friend2_id } = req.body;
         await prisma.friendList.update({
             data: {
                 friend1_id,

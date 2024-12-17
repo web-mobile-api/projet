@@ -8,7 +8,6 @@ export const pgPool = new pg.Pool({
     database: process.env.DBNAME
 });
 
-/* ----- Deuxième partie ----- */
 export const pool = {
     connect: async () => {
         try {
@@ -44,8 +43,6 @@ export const pool = {
     }
 };
 
-/* ----- Troisième partie ----- */
-// Si nous fermons notre processus, nous fermerons automatiquement toutes les connexions ouvertes à la base de données
 process.on('exit', () => {
     pgPool.end().then(() => console.log('pool closed'));
 });

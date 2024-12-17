@@ -38,8 +38,8 @@ export const getLocationByPosition = async (req, res)=> {
 
 export const addLocation = async (req, res) => {
     try {
-        const {street, num, city, code, country, position} = req.body;
-        const {location_id} = await prisma.location.create({
+        const { street, num, city, code, country, position } = req.body;
+        const { location_id } = await prisma.location.create({
             data: {
                 street,
                 num,
@@ -61,7 +61,7 @@ export const addLocation = async (req, res) => {
 
 export const updateLocation = async (req, res) => {
     try {
-        const {location_id, street, num, city, code, country, position} = req.body;
+        const { location_id, street, num, city, code, country, position } = req.body;
         await prisma.location.update({
             data: {
                 street,

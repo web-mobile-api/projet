@@ -16,6 +16,8 @@ model Account {
   email                                     String
   phone_number                              String
   birthdate                                 DateTime     @db.Date
+  profile_picture                           Int
+  Photo                                     Photo        @relation(fields: [profile_picture], references: [photo_id], onDelete: NoAction, onUpdate: NoAction)
   Comment                                   Comment[]
   Event                                     Event[]
   FriendList_FriendList_friend1_idToAccount FriendList[] @relation("FriendList_friend1_idToAccount")
@@ -32,15 +34,16 @@ model Comment {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Event {
-  event_id    Int       @id @default(autoincrement())
+  event_id    Int          @id @default(autoincrement())
   position_id Int?
   author_id   Int?
+  created_at  DateTime?    @default(now()) @db.Timestamptz(6)
   name_       String
-  date_       DateTime  @db.Date
+  date_       DateTime     @db.Date
   reccurence  String
-  Account     Account?  @relation(fields: [author_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
-  Location    Location? @relation(fields: [position_id], references: [location_id], onDelete: NoAction, onUpdate: NoAction)
-  Photo       Photo[]
+  Account     Account?     @relation(fields: [author_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
+  Location    Location?    @relation(fields: [position_id], references: [location_id], onDelete: NoAction, onUpdate: NoAction)
+  EventPhoto  EventPhoto[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -67,10 +70,19 @@ model Location {
 }
 
 model Photo {
-  path     String
-  photo_id Int    @id @default(autoincrement())
-  event_id Int?
-  Event    Event? @relation(fields: [event_id], references: [event_id], onDelete: NoAction, onUpdate: NoAction)
+  file_name  String       @unique
+  created_at DateTime?    @default(now()) @db.Timestamptz(6)
+  photo_id   Int          @id @default(autoincrement())
+  Account    Account[]
+  EventPhoto EventPhoto[]
+}
+
+model EventPhoto {
+  event_photo_id Int    @id @default(autoincrement())
+  event_id       Int?
+  photo_id       Int?
+  Event          Event? @relation(fields: [event_id], references: [event_id], onDelete: NoAction, onUpdate: NoAction)
+  Photo          Photo? @relation(fields: [photo_id], references: [photo_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model client {

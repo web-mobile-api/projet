@@ -1,10 +1,11 @@
-DROP TABLE IF EXISTS "Photo";
+DROP TABLE IF EXISTS "FriendList";
+DROP TABLE IF EXISTS "EventPhoto";
 DROP TABLE IF EXISTS "Event";
+DROP TABLE IF EXISTS "Comment";
+DROP TABLE IF EXISTS "Account";
+DROP TABLE IF EXISTS "Photo";
 DROP TABLE IF EXISTS "Location";
 DROP TABLE IF EXISTS "ParticipantList";
-DROP TABLE IF EXISTS "Comment";
-DROP TABLE IF EXISTS "FriendList";
-DROP TABLE IF EXISTS "Account";
 DROP TABLE IF EXISTS "UpVote";
 
 -- Create Location table
@@ -19,6 +20,16 @@ CREATE TABLE "Location" (
     CONSTRAINT location_composite_unique UNIQUE (street, num, country, city, code)
 );
 
+-- Create Photo table
+CREATE TABLE "Photo" (
+    file_name TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    photo_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY
+);
+
+INSERT into "Photo"(file_name)
+VALUES ('default_pfp.jpg');
+
 -- Create Account table
 CREATE TABLE "Account" (
     account_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -28,11 +39,12 @@ CREATE TABLE "Account" (
     email TEXT NOT NULL,
     phone_number TEXT NOT NULL,
     birthdate DATE NOT NULL,
+    profile_picture INTEGER REFERENCES "Photo"(photo_id) NOT NULL,
     CONSTRAINT chk_email_format CHECK (email LIKE '%_@_%.__%')
 );
 
-INSERT into "Account"(first_name, last_name, password, email, phone_number, birthdate)
-VALUES ('Julien', 'Higginson', 'password-password', 'J.H.Gipson62@gmail.com', '0488221444', '06-01-2004');
+INSERT into "Account"(first_name, last_name, password, email, phone_number, birthdate, profile_picture)
+VALUES ('Julien', 'Higginson', 'password-password', 'J.H.Gipson62@gmail.com', '0488221444', '06-01-2004', 1);
 
 -- Create FriendList table
 CREATE TABLE "FriendList" (
@@ -48,6 +60,7 @@ CREATE TABLE "Event" (
     event_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     position_id INTEGER REFERENCES "Location"(location_id),
     author_id INTEGER REFERENCES "Account"(account_id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     name_ TEXT NOT NULL,
     date_ DATE NOT NULL,
     reccurence TEXT NOT NULL,
@@ -64,9 +77,10 @@ CREATE TABLE "Comment" (
     author_id INTEGER REFERENCES "Account"(account_id)
 );
 
--- Create Photo table
-CREATE TABLE "Photo" (
-    path TEXT NOT NULL,
-    photo_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    event_id INTEGER REFERENCES "Event"(event_id)
+-- Create EventPhoto table
+CREATE TABLE "EventPhoto" (
+  event_photo_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  event_id INTEGER REFERENCES "Event"(event_id),
+  photo_id INTEGER REFERENCES "Photo"(photo_id)
 );
+
