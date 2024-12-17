@@ -11,11 +11,11 @@ import { authenticateAdmin, authenticateToken } from "../scripts/JS/authMiddlewa
 
 const router = Router();
 
-router.post("/", addLocation);
-router.patch("/", updateLocation);
-router.get("/id/:id", getLocationById);
-router.get("/position/:position", getLocationByPosition);
-router.delete("/id/:id", deleteLocationById);
-router.delete("/position/:position", deleteLocationByPosition)
+router.post("/", authenticateToken, addLocation);
+router.patch("/", authenticateToken, authenticateToken, updateLocation);
+router.get("/id/:id", authenticateToken, getLocationById);
+router.get("/position/:position", authenticateToken, getLocationByPosition);
+router.delete("/id/:id", authenticateToken, authenticateToken, deleteLocationById);
+router.delete("/position/:position", authenticateToken, authenticateToken, deleteLocationByPosition);
 
 export default router;

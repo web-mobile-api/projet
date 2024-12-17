@@ -1,6 +1,7 @@
 import prisma from "../database/databaseORM.js";
 import multer from "multer";
 import fs from "fs";
+import { Permission } from "../scripts/JS/authMiddleware.js";
 
 const uploadDir = "./uploads";
 
@@ -73,23 +74,28 @@ export const addPhoto = async (req, res) => {
     }
 };
 
+//add the author_id in photo so we know if a user can or can't update a photo
 export const updatePhoto = async (req, res) => {
     try {
-        const { first_name, last_name, password, email, phone_number, birthdate } = req.body;
-        await prisma.account.update({
-            data: {
-                first_name,
-                last_name,
-                password,
-                email,
-                phone_number,
-                birthdate: (new Date(birthdate)).toISOString()
-            },
-            where: {
-                id
-            }
-        });
-        res.sendStatus(204);
+        if (req.perm === Permission.Admin){
+            const { first_name, last_name, password, email, phone_number, birthdate } = req.body;
+            await prisma.account.update({
+                data: {
+                    first_name,
+                    last_name,
+                    password,
+                    email,
+                    phone_number,
+                    birthdate: (new Date(birthdate)).toISOString()
+                },
+                where: {
+                    id
+                }
+            });
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(403);
+        }
     } catch (e) {
         console.error(e);
         res.sendStatus(500);
@@ -98,26 +104,28 @@ export const updatePhoto = async (req, res) => {
 
 export const deletePhoto = async (req, res) => {
     try {
-        const photo = await prisma.photo.findUnique({
-            where: {
-                photo_id: parseInt(req.params.id)
-            }
-        });
-        if (photo) {
-            console.log(photo.file_name);
-            fs.unlink("./uploads/" + photo.file_name, async (err) => {
-                if (err) {
-                    console.error(err);
-                    return;
+        if (req.perm === Permission.Admin){
+            const photo = await prisma.photo.findUnique({
+                where: {
+                    photo_id: parseInt(req.params.id)
                 }
-                await prisma.photo.delete({
-                    where: {
-                        photo_id: parseInt(req.params.id)
+            });
+            if (photo) {
+                console.log(photo.file_name);
+                fs.unlink("./uploads/" + photo.file_name, async (err) => {
+                    if (err) {
+                        console.error(err);
+                        return;
                     }
-                });
-            })
+                    await prisma.photo.delete({
+                        where: {
+                            photo_id: parseInt(req.params.id)
+                        }
+                    });
+                })
+            }
+            res.sendStatus(204);
         }
-        res.sendStatus(204);
     } catch (e) {
         console.error(e);
         res.sendStatus(500);

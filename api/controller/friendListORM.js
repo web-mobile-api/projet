@@ -1,4 +1,5 @@
 import prisma from "../database/databaseORM.js";
+import { Permission } from "../scripts/JS/authMiddleware.js";
 
 export const getFriendList = async (req, res)=> {
     try {
@@ -21,7 +22,7 @@ export const getFriendList = async (req, res)=> {
                 date: true,
             }
         });
-        if(friendList){
+        if(friendList) {
             res.send(friendList);
         } else {
             res.sendStatus(404);
@@ -54,17 +55,26 @@ export const addFriendShip = async (req, res) => {
 
 export const updateFriendShip = async (req, res) => {
     try {
-        const { friend1_id, friend2_id } = req.body;
-        await prisma.friendList.update({
-            data: {
-                friend1_id,
-                friend2_id
-            },
+        const account = await prisma.account.findUnique({
             where: {
-                friend_list_id
+                email: req.user.email
             }
         });
-        res.sendStatus(204);
+        const { friend1_id, friend2_id } = req.body;
+        if (account && (req.perm === Permission.Admin || (account.account_id === friend1_id || account.account_id === friend2_id))) {
+            await prisma.friendList.update({
+                data: {
+                    friend1_id,
+                    friend2_id
+                },
+                where: {
+                    friend_list_id
+                }
+            });
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(403)
+        }
     } catch (e) {
         console.error(e);
         res.sendStatus(500);

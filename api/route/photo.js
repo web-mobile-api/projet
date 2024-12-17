@@ -11,10 +11,10 @@ import { authenticateAdmin, authenticateToken } from "../scripts/JS/authMiddlewa
 
 const router = Router();
 
-router.post("/", upload.single("photo"), addPhoto);
-router.patch("/", updatePhoto);
-router.get("/id/:id", getPhotoById);
-router.get("/uploads/:filename", getPhotoByPath);
-router.delete("/:id", deletePhoto);
+router.post("/", authenticateToken, upload.single("photo"), addPhoto);
+router.patch("/", authenticateAdmin, authenticateToken, updatePhoto);
+router.get("/id/:id", authenticateToken, getPhotoById);
+router.get("/uploads/:filename", authenticateToken, getPhotoByPath);
+router.delete("/:id", authenticateAdmin, authenticateToken, deletePhoto);
 
 export default router;

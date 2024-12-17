@@ -25,6 +25,26 @@ export const getAccount = async (req, res)=> {
     }
 };
 
+export const getMultipleAccounts = async (req, res) => {
+    try {
+        const { accountIds } = req.body;
+        const accounts = await prisma.account.findMany({
+            where: {
+                account_id: {
+                    in: accountIds
+                }
+            }
+        });
+        if (accounts) {
+            res.send(accounts);
+        } else {
+            res.send(404);
+        }
+    } catch (err) {
+
+    }
+}
+
 export const addAccount = async (req, res) => {
     try {
         const { first_name, last_name, password, email, phone_number, birthdate, profile_picture } = req.body;

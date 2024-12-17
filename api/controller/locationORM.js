@@ -59,23 +59,29 @@ export const addLocation = async (req, res) => {
     }
 };
 
+//todo: Make it so the one who created the event can modify the location (maybe just create a new one?)
 export const updateLocation = async (req, res) => {
     try {
         const { location_id, street, num, city, code, country, position } = req.body;
-        await prisma.location.update({
-            data: {
-                street,
-                num,
-                city,
-                code,
-                country,
-                position
-            },
-            where: {
-                location_id
-            }
-        });
-        res.sendStatus(204);
+
+        if (req.perm == Permission.Admin) {
+            await prisma.location.update({
+                data: {
+                    street,
+                    num,
+                    city,
+                    code,
+                    country,
+                    position
+                },
+                where: {
+                    location_id
+                }
+            });
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(403);
+        }
     } catch (e) {
         console.error(e);
         res.sendStatus(500);
@@ -84,12 +90,16 @@ export const updateLocation = async (req, res) => {
 
 export const deleteLocationByPosition = async (req, res) => {
     try {
-        await prisma.location.delete({
-            where: {
-                position: req.params.position
-            }
-        });
-        res.sendStatus(204);
+        if (req.perm == Permission.Admin) {
+            await prisma.location.delete({
+                where: {
+                    position: req.params.position
+                }
+            });
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(403);
+        }
     } catch (e) {
         console.error(e);
         res.sendStatus(500);

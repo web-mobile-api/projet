@@ -9,9 +9,9 @@ import { authenticateAdmin, authenticateToken } from "../scripts/JS/authMiddlewa
 
 const router = Router();
 
-router.post("/", addFriendShip);
-router.patch("/:id", updateFriendShip);
-router.get("/:id", getFriendList);
-router.delete("/:id", deleteFriendShip);
+router.post("/", authenticateToken, addFriendShip);
+router.patch("/:id", authenticateToken, authenticateAdmin, updateFriendShip);
+router.get("/:id", authenticateToken, getFriendList);
+router.delete("/:id", authenticateToken, authenticateAdmin, deleteFriendShip);
 
 export default router;

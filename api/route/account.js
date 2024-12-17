@@ -4,6 +4,7 @@ import {
     updateAccount,
     deleteAccount,
     getAccount,
+    getMultipleAccounts,
     heartbeat,
     login
 } from "../controller/accountORM.js";
@@ -17,6 +18,7 @@ router.patch("/heartbeat", authenticateToken, heartbeat);
 router.post("/", addAccount);
 router.patch("/", authenticateToken, authenticateAdmin, updateAccount);
 router.get("/:id", authenticateToken, getAccount);
+router.get("/", authenticateToken, getMultipleAccounts);
 router.delete("/:id", authenticateToken, authenticateAdmin, deleteAccount);
 
 export default router;

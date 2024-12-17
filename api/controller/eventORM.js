@@ -1,4 +1,5 @@
 import prisma from "../database/databaseORM.js";
+import { Permission } from "../scripts/JS/authMiddleware.js";
 
 export const getAllEvents = async (req, res) => {
     try {
@@ -113,20 +114,29 @@ export const addEvent = async (req, res) => {
 
 export const updateEvent = async (req, res) => {
     try {
-        const { event_id, location_id, author_id, name, date, reccurence } = req.body;
-        await prisma.event.update({
-            data: {
-                location_id,
-                author_id,
-                name,
-                date,
-                reccurence,
-            },
+        const account = await prisma.account.findUnique({
             where: {
-                event_id
+                email: req.user.email
             }
         });
-        res.sendStatus(204);
+        const { event_id, location_id, author_id, name, date, reccurence } = req.body;
+        if (account && req.perm === Permission.Admin || account.account_id === author_id) {
+            await prisma.event.update({
+                data: {
+                    location_id,
+                    author_id,
+                    name,
+                    date,
+                    reccurence,
+                },
+                where: {
+                    event_id
+                }
+            });
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(403);
+        }
     } catch (e) {
         console.error(e);
         res.sendStatus(500);
@@ -135,12 +145,27 @@ export const updateEvent = async (req, res) => {
 
 export const deleteEvent = async (req, res) => {
     try {
-        await prisma.event.delete({
+        const account = await prisma.account.findUnique({
             where: {
-                event_id: parseInt(req.params.id)
+                email: req.user.email
             }
         });
-        res.sendStatus(204);
+        const event_id = parseInt(req.params.id);
+        const event = await prisma.event.findUnique({
+            where: {
+                event_id 
+            }
+        });
+        if ((account && event) && (req.perm === Permission.Admin || account.account_id === event.account_id)) {
+            await prisma.event.delete({
+                where: {
+                    event_id: parseInt(req.params.id)
+                }
+            });
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(403);
+        }
     } catch (e) {
         console.error(e);
         res.sendStatus(500);
