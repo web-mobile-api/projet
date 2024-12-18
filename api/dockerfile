@@ -1,0 +1,21 @@
+# Use Node.js Debian image for better compatibility with native modules
+FROM node:20.7.0
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy environment variables
+COPY .env ./
+
+# Copy all source code
+COPY . .
+
+# Expose the API port
+EXPOSE 3001
+
+# Start the application
+CMD ["npm", "start"]

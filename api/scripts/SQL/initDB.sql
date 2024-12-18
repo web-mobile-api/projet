@@ -72,6 +72,11 @@ CREATE TABLE "FriendList" (
     CONSTRAINT chk_friend_ids CHECK (friend1_id <> friend2_id)
 );
 
+-- Create FriendInvitation table
+CREATE TABLE "FriendInvitation" (
+    
+);
+
 -- Create Event table
 CREATE TABLE "Event" (
     event_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

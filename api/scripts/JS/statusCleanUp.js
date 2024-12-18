@@ -2,7 +2,7 @@ import cron from "node-cron";
 import prisma from "../../database/databaseORM.js";
 
 export const statusCleanUp = () => {
-    cron.schedule("*/2 * * * *", async () => {
+    cron.schedule("*/5 * * * *", async () => {
         console.log("Running cleanup job to mark inactive users as offline...");
     
         const inactivityThreshold = new Date(Date.now() - 5 * 60 * 1000);
