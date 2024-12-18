@@ -7,14 +7,13 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import * as Location from 'expo-location';
 
-const events = [
+const initialEvents = [
   // Initial events
 ];
-
 function getCurrentDate() {
   const today = new Date();
   const day = String(today.getDate()).padStart(2, '0');
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
   const year = today.getFullYear();
   return { day, month, year };
 }
@@ -23,7 +22,7 @@ const HomeScreen = ({ route }) => {
   const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(getCurrentDate());
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [allEvents, setAllEvents] = useState(events);
+  const [allEvents, setAllEvents] = useState(initialEvents);
   const [location, setLocation] = useState(null);
   const [mapRegion, setMapRegion] = useState(null);
   const navigation = useNavigation();
@@ -78,8 +77,12 @@ const HomeScreen = ({ route }) => {
 
   const applyFilters = (filters = selectedDate) => {
     const filtered = allEvents.filter(event => {
-      const eventDate = new Date(`${event.date.year}-${event.date.month}-${event.date.day}`);
-      const filterDate = new Date(`${filters.year}-${filters.month}-${filters.day}`);
+      const eventDate = new Date(
+        `${event.startDate.year}-${event.startDate.month}-${event.startDate.day}`
+      );
+      const filterDate = new Date(
+        `${filters.year}-${filters.month}-${filters.day}`
+      );
 
       return eventDate.getTime() === filterDate.getTime();
     });
@@ -102,10 +105,24 @@ const HomeScreen = ({ route }) => {
     navigation.navigate('CreateEvent');
   };
 
+  const handleLogoPress = () => {
+    navigation.navigate('Friends');
+  };
+
+  const getMinDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <PaperProvider>
       <View style={styles.container}>
-        <Image source={require('./assets/logo.png')} style={styles.logo} />
+        <TouchableOpacity onPress={handleLogoPress}>
+          <Image source={require('./assets/logo.png')} style={styles.logo} />
+        </TouchableOpacity>
         <View style={styles.mapContainer}>
           {mapRegion ? (
             <MapView style={styles.map} region={mapRegion}>
@@ -116,17 +133,13 @@ const HomeScreen = ({ route }) => {
                   coordinate={event.coordinate}
                   title={event.title}
                   description={event.description}
+                  pinColor="red"
                   onPress={() => handleMarkerPress(event)}
                 />
               ))}
             </MapView>
           ) : (
-            <MapView style={styles.map} initialRegion={{
-              latitude: 50.4663,
-              longitude: 4.8667,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }} />
+            <MapView style={styles.map} />
           )}
           <TouchableOpacity style={styles.filterButton} onPress={toggleFilterModal}>
             <Icon name="filter" size={25} color="#6200EE" />
@@ -136,19 +149,19 @@ const HomeScreen = ({ route }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.menu}>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Friends')}>
             <View style={styles.iconContainer}>
               <Icon name="users" size={20} color="#808080" />
               <Text style={[styles.menuText, { color: '#808080' }]}>Amis</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
             <View style={styles.iconContainer}>
               <Icon name="map" size={25} color="#6200EE" />
               <Text style={[styles.menuText, { color: '#6200EE' }]}>Carte</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
             <View style={styles.iconContainer}>
               <Icon name="cog" size={20} color="#808080" />
               <Text style={[styles.menuText, { color: '#808080' }]}>Para.</Text>
@@ -171,8 +184,9 @@ const HomeScreen = ({ route }) => {
                 <Calendar
                   onDayPress={handleDayPress}
                   markedDates={{
-                    [selectedDate.year + '-' + selectedDate.month + '-' + selectedDate.day]: { selected: true, selectedColor: '#6200EE' },
+                    [`${selectedDate.year}-${selectedDate.month}-${selectedDate.day}`]: { selected: true, selectedColor: '#6200EE' },
                   }}
+                  minDate={getMinDate()}
                   theme={{
                     backgroundColor: '#ffffff',
                     calendarBackground: '#ffffff',

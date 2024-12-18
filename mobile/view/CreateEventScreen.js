@@ -2,13 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import ActionSheet from 'react-native-actionsheet';
-import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 const CreateEventScreen = () => {
@@ -16,18 +14,19 @@ const CreateEventScreen = () => {
   const [description, setDescription] = useState('');
   const [type, setType] = useState('Type');
   const [price, setPrice] = useState('');
-  const [date, setDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
   const [organisateur, setOrganisateur] = useState('');
   const [image, setImage] = useState(null);
-  const [address, setAddress] = useState('');
   const [publicInfo, setPublicInfo] = useState('');
-  const [location, setLocation] = useState(null);
-  const [showAddressPicker, setShowAddressPicker] = useState(false);
+  const [address, setAddress] = useState(''); // État pour l'adresse
+  const [coordinates, setCoordinates] = useState(null); // État pour les coordonnées
   const navigation = useNavigation();
   const actionSheetRef = useRef(null);
 
@@ -38,14 +37,21 @@ const CreateEventScreen = () => {
         Alert.alert('Permission refusée', 'Désolé, nous avons besoin de l\'autorisation de la caméra pour prendre des photos.');
       }
 
-      let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
-      if (locationStatus !== 'granted') {
-        Alert.alert('Permission refusée', 'Désolé, nous avons besoin de l\'autorisation de localisation pour suggérer des adresses.');
+      const locationStatus = await Location.requestForegroundPermissionsAsync();
+      if (locationStatus.status !== 'granted') {
+        Alert.alert('Permission refusée', 'Désolé, nous avons besoin de l\'autorisation de localisation pour obtenir votre adresse.');
         return;
       }
 
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation(currentLocation);
+      const location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+      setCoordinates({ latitude, longitude });
+
+      const reverseGeocode = await Location.reverseGeocodeAsync({ latitude, longitude });
+      if (reverseGeocode.length > 0) {
+        const { street, city, region, postalCode, country } = reverseGeocode[0];
+        setAddress(`${street}, ${city}, ${region} ${postalCode}, ${country}`);
+      }
     })();
   }, []);
 
@@ -76,30 +82,38 @@ const CreateEventScreen = () => {
     actionSheetRef.current.show();
   };
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     const newEvent = {
       id: uuidv4(),
       title,
       description,
       type,
       price: parseFloat(price),
-      date: { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() },
+      startDate: { day: startDate.getDate(), month: startDate.getMonth() + 1, year: startDate.getFullYear() },
+      endDate: { day: endDate.getDate(), month: endDate.getMonth() + 1, year: endDate.getFullYear() },
       startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       endTime: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       organisateur,
       image,
       interestedCount: 0,
-      locationDetails: address,
       publicInfo,
+      address, // Ajouter l'adresse au nouvel événement
+      coordinate: coordinates,
     };
 
     navigation.navigate('Home', { newEvent });
   };
 
-  const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShowDatePicker(false);
-    setDate(currentDate);
+  const onChangeStartDate = (event, selectedDate) => {
+    const currentDate = selectedDate || startDate;
+    setShowStartDatePicker(false);
+    setStartDate(currentDate);
+  };
+
+  const onChangeEndDate = (event, selectedDate) => {
+    const currentDate = selectedDate || endDate;
+    setShowEndDatePicker(false);
+    setEndDate(currentDate);
   };
 
   const onChangeStartTime = (event, selectedTime) => {
@@ -112,15 +126,6 @@ const CreateEventScreen = () => {
     const currentTime = selectedTime || endTime;
     setShowEndTimePicker(false);
     setEndTime(currentTime);
-  };
-
-  const handleAddressChange = (data, details = null) => {
-    setAddress(data.description);
-    setLocation({
-      latitude: details.geometry.location.lat,
-      longitude: details.geometry.location.lng,
-    });
-    setShowAddressPicker(false);
   };
 
   return (
@@ -158,25 +163,28 @@ const CreateEventScreen = () => {
         onChangeText={setPrice}
         keyboardType="numeric"
       />
-      <Text style={styles.label}>Date de l'événement</Text>
-      <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
-        <Text style={styles.datePickerButtonText}>
-          {date.toLocaleDateString()}
-        </Text>
-      </TouchableOpacity>
-      {showDatePicker && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode="date"
-          display="default"
-          onChange={onChangeDate}
-          minimumDate={new Date()}
-        />
-      )}
+      <TextInput
+        style={styles.input}
+        placeholder="Organisateur"
+        value={organisateur}
+        onChangeText={setOrganisateur}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Pour qui ?"
+        value={publicInfo}
+        onChangeText={setPublicInfo}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Adresse"
+        value={address}
+        onChangeText={setAddress}
+        editable={true} 
+      />
       <Text style={styles.label}>Heure de début</Text>
       <TouchableOpacity style={styles.input} onPress={() => setShowStartTimePicker(true)}>
-        <Text style={styles.datePickerButtonText}>
+        <Text style={styles.datePickerButtonTextGray}>
           {startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </Text>
       </TouchableOpacity>
@@ -192,7 +200,7 @@ const CreateEventScreen = () => {
       )}
       <Text style={styles.label}>Heure de fin</Text>
       <TouchableOpacity style={styles.input} onPress={() => setShowEndTimePicker(true)}>
-        <Text style={styles.datePickerButtonText}>
+        <Text style={styles.datePickerButtonTextGray}>
           {endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </Text>
       </TouchableOpacity>
@@ -206,75 +214,45 @@ const CreateEventScreen = () => {
           onChange={onChangeEndTime}
         />
       )}
-      <TextInput
-        style={styles.input}
-        placeholder="Organisateur"
-        value={organisateur}
-        onChangeText={setOrganisateur}
-      />
+      <Text style={styles.label}>Date de début</Text>
+      <TouchableOpacity style={styles.input} onPress={() => setShowStartDatePicker(true)}>
+        <Text style={styles.datePickerButtonTextGray}>
+          {startDate.toLocaleDateString()}
+        </Text>
+      </TouchableOpacity>
+      {showStartDatePicker && (
+        <DateTimePicker
+          testID="startDatePicker"
+          value={startDate}
+          mode="date"
+          display="default"
+          onChange={onChangeStartDate}
+          minimumDate={new Date()}
+        />
+      )}
+      <Text style={styles.label}>Date de fin</Text>
+      <TouchableOpacity style={styles.input} onPress={() => setShowEndDatePicker(true)}>
+        <Text style={styles.datePickerButtonTextGray}>
+          {endDate.toLocaleDateString()}
+        </Text>
+      </TouchableOpacity>
+      {showEndDatePicker && (
+        <DateTimePicker
+          testID="endDatePicker"
+          value={endDate}
+          mode="date"
+          display="default"
+          onChange={onChangeEndDate}
+          minimumDate={startDate}
+        />
+      )}
       <TouchableOpacity style={styles.imagePicker} onPress={showImagePickerOptions}>
         <Text style={styles.imagePickerText}>Ajouter une photo</Text>
       </TouchableOpacity>
       {image && <Image source={{ uri: image }} style={styles.image} />}
-      <TouchableOpacity style={styles.input} onPress={() => setShowAddressPicker(true)}>
-        <Text style={styles.datePickerButtonText}>
-          {address || 'Choisir une adresse'}
-        </Text>
+      <TouchableOpacity style={styles.createButton} onPress={handleCreateEvent}>
+        <Text style={styles.createButtonText}>Créer l'événement</Text>
       </TouchableOpacity>
-      {showAddressPicker && (
-        <GooglePlacesAutocomplete
-          placeholder="Adresse"
-          minLength={2}
-          autoFocus={false}
-          returnKeyType={'search'}
-          listViewDisplayed="auto"
-          fetchDetails={true}
-          renderDescription={(row) => row.description}
-          onPress={handleAddressChange}
-          getDefaultValue={() => ''}
-          query={{
-            key: 'AIzaSyCidfAwZPAdobSOEFhz3wVyirYaXyA2C7A',
-            language: 'fr',
-          }}
-          styles={{
-            textInputContainer: {
-              width: '100%',
-            },
-            description: {
-              fontWeight: 'bold',
-            },
-            predefinedPlacesDescription: {
-              color: '#1faadb',
-            },
-          }}
-          currentLocation={false}
-          nearbyPlacesAPI="GooglePlacesSearch"
-          GoogleReverseGeocodingQuery={{}}
-          GooglePlacesSearchQuery={{
-            rankby: 'distance',
-            types: 'address',
-          }}
-          filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']}
-          debounce={200}
-        />
-      )}
-      {location && (
-        <MapView style={styles.map} region={{
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
-        }}>
-          <Marker coordinate={location.coords} />
-        </MapView>
-      )}
-      <TextInput
-        style={styles.input}
-        placeholder="Pour qui ?"
-        value={publicInfo}
-        onChangeText={setPublicInfo}
-      />
-      <Button title="Créer l'événement" onPress={handleCreateEvent} />
       <ActionSheet
         ref={actionSheetRef}
         title="Choisir une photo"
@@ -329,8 +307,8 @@ const styles = StyleSheet.create({
     height: 60,
     fontSize: 16,
   },
-  datePickerButtonText: {
-    color: '#6200EE',
+  datePickerButtonTextGray: {
+    color: 'gray',
     textAlign: 'center',
   },
   imagePicker: {
@@ -356,11 +334,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: '#6200EE',
   },
-  map: {
+  createButton: {
+    backgroundColor: '#FFD700', // Couleur jaune doré
+    padding: 10,
+    borderRadius: 5,
     width: '100%',
-    height: 200,
-    marginBottom: 20,
-    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  createButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
