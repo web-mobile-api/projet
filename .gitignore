@@ -1,3 +1,4 @@
 */node_modules/*
 package-lock.json
 .env
+/mobile/view/node_modules
