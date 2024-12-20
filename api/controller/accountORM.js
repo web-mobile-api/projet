@@ -1,9 +1,9 @@
 import prisma from "../database/databaseORM.js";
 import { Permission } from "../scripts/JS/authMiddleware.js";
 import { exclude } from "../scripts/JS/omitField.js";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 import { generateToken } from "../scripts/JS/jwtUtils.js";
-const salt = bcrypt.genSaltSync();
+const salt = bcryptjs.genSaltSync();
 
 
 export const getAccount = async (req, res)=> {
@@ -173,7 +173,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const hashed = bcrypt.hashSync("password", salt);
+        const hashed = bcryptjs.hashSync("password", salt);
         console.log(hashed);
         const user = await prisma.account.findUnique({
             where: { email: email },
@@ -190,7 +190,7 @@ export const login = async (req, res) => {
             });
         }
     
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcryptjs.compare(password, user.password);
     
         if (!passwordMatch) {
             return res.status(401).json({
