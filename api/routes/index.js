@@ -8,11 +8,15 @@ import { default as v1CommentRouter } from './v1/comment.js';
 
 const router = Router();
 
-router.use('/v1/account', v1AccountRouter);
-router.use('/v1/location', v1LocationRouter);
-router.use('/v1/friendList', v1FriendListRouter);
-router.use('/v1/photo', v1PhotoRouter);
-router.use('/v1/event', v1EventRouter);
-router.use('/v1/comment', v1CommentRouter);
+const v1Router = Router();
+
+v1Router.use('/account', v1AccountRouter);
+v1Router.use('/location', v1LocationRouter);
+v1Router.use('/friendList', v1FriendListRouter);
+v1Router.use('/photo', v1PhotoRouter);
+v1Router.use('/event', v1EventRouter);
+v1Router.use('/comment', v1CommentRouter);
+
+router.use('/v1', v1Router);
 
 export default router;

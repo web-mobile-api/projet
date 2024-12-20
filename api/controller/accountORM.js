@@ -195,7 +195,8 @@ export const updateAccount = async (req, res) => {
             password,
             email,
             phone_number,
-            birthdate
+            birthdate,
+            profile_picture
         } = req.body;
 
         if (account && (req.perm == Permission.Admin || account_id === account.account_id)){
@@ -206,7 +207,8 @@ export const updateAccount = async (req, res) => {
                     password: bcryptjs.hashSync(password, salt),
                     email,
                     phone_number,
-                    birthdate: (new Date(birthdate)).toISOString()
+                    birthdate: (new Date(birthdate)).toISOString(),
+                    profile_picture
                 },
                 where: {
                     account_id
