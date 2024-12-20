@@ -7,7 +7,7 @@ const salt = bcryptjs.genSaltSync();
 
 /**
  * @swagger
- * /v1/account/{id}:
+ * /v1/account/id/{id}:
  *   get:
  *     summary: Retrieve a single account by ID
  *     parameters:
@@ -25,7 +25,7 @@ const salt = bcryptjs.genSaltSync();
  *       500:
  *         description: Internal server error
  */
-export const getAccount = async (req, res)=> {
+export const getAccount = async (req, res) => {
     try {
         const account = await prisma.account.findUnique({
             where: {
@@ -46,7 +46,7 @@ export const getAccount = async (req, res)=> {
 
 /**
  * @swagger
- * /v1/account:
+ * /v1/account/ids?accountIDs={accountIDs}:
  *   get:
  *     summary: Retrieve multiple accounts by IDs
  *     parameters:
@@ -66,7 +66,8 @@ export const getAccount = async (req, res)=> {
  */
 export const getMultipleAccounts = async (req, res) => {
     try {
-        const accountIds = req.query.accountIds;
+        const accountIds = req.query.accountIDs;
+        console.log("Ids: ", accountIds);
         const accounts = await prisma.account.findMany({
             where: {
                 account_id: {
@@ -80,7 +81,8 @@ export const getMultipleAccounts = async (req, res) => {
             res.send(404);
         }
     } catch (err) {
-
+        console.error(err);
+        res.sendStatus(500);
     }
 }
 
@@ -125,7 +127,7 @@ export const addAccount = async (req, res) => {
             data: {
                 first_name,
                 last_name,
-                password,
+                password: bcryptjs.hashSync(password, salt),
                 email: email,
                 phone_number,
                 birthdate: (new Date(birthdate)).toISOString(),
@@ -201,7 +203,7 @@ export const updateAccount = async (req, res) => {
                 data: {
                     first_name,
                     last_name,
-                    password,
+                    password: bcryptjs.hashSync(password, salt),
                     email,
                     phone_number,
                     birthdate: (new Date(birthdate)).toISOString()
@@ -336,18 +338,14 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const hashed = bcryptjs.hashSync("password", salt);
-        console.log(hashed);
         const user = await prisma.account.findUnique({
             where: { email: email },
         });
-
-
     
         if (!user) {
             return res.status(401).json({
                 message: {
-                    "en": "Invalid email or password.",
+                    "en": "Invalid email.",
                     "fr": "Email ou mot de passe invalide."
                 }
             });
@@ -358,7 +356,7 @@ export const login = async (req, res) => {
         if (!passwordMatch) {
             return res.status(401).json({
                 message: {
-                    "en": "Invalid email or password.",
+                    "en": "Invalid password.",
                     "fr": "Email ou mot de passe invalide."
                 }
             });

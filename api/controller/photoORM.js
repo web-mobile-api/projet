@@ -215,27 +215,31 @@ export const updatePhoto = async (req, res) => {
  */
 export const deletePhoto = async (req, res) => {
     try {
-        if (req.perm === Permission.Admin){
-            const photo = await prisma.photo.findUnique({
-                where: {
-                    photo_id: parseInt(req.params.id)
-                }
-            });
-            if (photo) {
-                console.log(photo.file_name);
-                fs.unlink("./uploads/" + photo.file_name, async (err) => {
-                    if (err) {
-                        console.error(err);
-                        return;
-                    }
-                    await prisma.photo.delete({
-                        where: {
-                            photo_id: parseInt(req.params.id)
-                        }
-                    });
-                })
+        const photo_id = parseInt(req.params.id);
+        if (photo_id === 1) 
+            return res.sendStatus(403);
+        const photo = await prisma.photo.findUnique({
+            where: {
+                photo_id
             }
-            res.sendStatus(204);
+        });
+        if (photo && req.perm === Permission.Admin) {
+            console.log(photo.file_name);
+            fs.unlink("./uploads/" + photo.file_name, async (err) => {
+                if (err) {
+                    console.error(err);
+                    res.sendStatus(500);
+                    return;
+                }
+                await prisma.photo.delete({
+                    where: {
+                        photo_id
+                    }
+                });
+                res.sendStatus(204);
+            });
+        } else {
+            res.sendStatus(403);
         }
     } catch (e) {
         console.error(e);

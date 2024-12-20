@@ -1,0 +1,593 @@
+{
+	"info": {
+		"_postman_id": "fc6b1a1c-a609-4d9d-952f-ddde11fd29e2",
+		"name": "api-web-mobile",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40338229"
+	},
+	"item": [
+		{
+			"name": "localhost:3001/account/login",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"email\": \"antoinehigginson2001@gmail.com\",\r\n   \"password\": \"hello pas world\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/account/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"account",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/account/id/{id}",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcwNTk3NywiZXhwIjoxNzM3Mjk3OTc3fQ.56TXd7onduJSnzz0z06akd28ab-f1qJb3anchIRVIWA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/v1/account/id/2",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"account",
+						"id",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/account/ids?accountIDs={accountIDs}",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcwNTk3NywiZXhwIjoxNzM3Mjk3OTc3fQ.56TXd7onduJSnzz0z06akd28ab-f1qJb3anchIRVIWA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"location_id\": 1,\r\n    \"author_id\": 1,\r\n    \"created_at\": \"2024-12-17T16:07:20.667Z\",\r\n    \"name\": \"Barnabeer\",\r\n    \"date\": \"2025-01-02T00:00:00.000Z\",\r\n    \"reccurence\": \"weekly\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/account/ids?accountIDs=1,2,3",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"account",
+						"ids"
+					],
+					"query": [
+						{
+							"key": "accountIDs",
+							"value": "1,2,3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/location/",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcwNTk3NywiZXhwIjoxNzM3Mjk3OTc3fQ.56TXd7onduJSnzz0z06akd28ab-f1qJb3anchIRVIWA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"street\": \"Rue de Bruxelles\",\r\n    \"num\": 39,\r\n    \"city\": \"Namur\",\r\n    \"code\": 5000,\r\n    \"country\": \"Belgique\",\r\n    \"position\": \"50.46551,4.8623447\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/location/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"location",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/comment/from/1/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcwNTk3NywiZXhwIjoxNzM3Mjk3OTc3fQ.56TXd7onduJSnzz0z06akd28ab-f1qJb3anchIRVIWA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"content\":\"Coucou les gens\",\r\n    \"author_id\": 1,\r\n    \"event_id\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/comment/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"comment",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/account/withPFP/",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiSi5ILkdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDQ2NTc2NiwiZXhwIjoxNzM3MDU3NzY2fQ.KxCDoiHYUsOxPXQ-Zf29o0QA_UULTKCLeM4RkUrcW2M",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "profile_picture",
+							"description": "Il vous faudra probablement mettre votre propre image ici.",
+							"type": "file",
+							"src": "/C:/Users/julhi/Pictures/Screenshots/Screenshot 2024-09-01 150422.png"
+						},
+						{
+							"key": "password",
+							"value": "hello world",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "higginsonp@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "first_name",
+							"value": "Pascal",
+							"type": "text"
+						},
+						{
+							"key": "last_name",
+							"value": "Higginson",
+							"type": "text"
+						},
+						{
+							"key": "birthdate",
+							"value": "1970-11-18",
+							"type": "text"
+						},
+						{
+							"key": "phone_number",
+							"value": "0455896325",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://172.17.48.1:3001/v1/account/withPFP",
+					"protocol": "http",
+					"host": [
+						"172",
+						"17",
+						"48",
+						"1"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"account",
+						"withPFP"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/event/",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcwNTk3NywiZXhwIjoxNzM3Mjk3OTc3fQ.56TXd7onduJSnzz0z06akd28ab-f1qJb3anchIRVIWA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"location_id\": 1,\r\n    \"author_id\": 1,\r\n    \"name\": \"Barbabeer Party\",\r\n    \"date\": \"2025-01-01\",\r\n    \"reccurence\": \"weekly\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/event/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"event",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/photo/id/2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcwNTk3NywiZXhwIjoxNzM3Mjk3OTc3fQ.56TXd7onduJSnzz0z06akd28ab-f1qJb3anchIRVIWA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:3001/v1/photo/id/2",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"photo",
+						"id",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/photo/",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcwNTk3NywiZXhwIjoxNzM3Mjk3OTc3fQ.56TXd7onduJSnzz0z06akd28ab-f1qJb3anchIRVIWA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "photo",
+							"type": "file",
+							"src": "/C:/Users/julhi/Pictures/Screenshots/Screenshot 2024-08-16 211721.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3001/v1/photo/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"photo",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/photo/",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcyMzUzMSwiZXhwIjoxNzM3MzE1NTMxfQ.P09OMl4IjIEwgGWXO4AykYtuCLw6cWLXkxuJ76Cw738",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/v1/photo/2",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"photo",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/account",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"first_name\": \"Vincent\",\r\n    \"last_name\": \"Higginson\",\r\n    \"password\": \"Hello World\",\r\n    \"email\": \"vinhig@gmail.com\",\r\n    \"phone_number\": \"0455899698\",\r\n    \"birthdate\": \"2000-04-21\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/account",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/account/",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"account_id\": 3,\r\n    \"first_name\": \"Antoine\",\r\n    \"last_name\": \"Higginson\",\r\n    \"password\": \"hello pas world\",\r\n    \"email\": \"antoinehigginson2001@gmail.com\",\r\n    \"phone_number\": \"0456898023\",\r\n    \"birthdate\": \"2001-08-08\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/account/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"account",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/account/id/3",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/v1/account/id/3",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"account",
+						"id",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/account/id/3",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImVtYWlsIjoiYW50b2luZWhpZ2dpbnNvbjIwMDFAZ21haWwuY29tIiwiaWF0IjoxNzM0NzI4NTY3LCJleHAiOjE3MzczMjA1Njd9.-Uh1wzGoQDaYPGIlGnULyylHHl7O9U6K2AactQ78NbE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/v1/account/3",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"account",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3001/v1/event/",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImVtYWlsIjoiYW50b2luZWhpZ2dpbnNvbjIwMDFAZ21haWwuY29tIiwiaWF0IjoxNzM0NzI4NTY3LCJleHAiOjE3MzczMjA1Njd9.-Uh1wzGoQDaYPGIlGnULyylHHl7O9U6K2AactQ78NbE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/v1/event/id/2",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"event",
+						"id",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiai5oLmdpcHNvbjYyQGdtYWlsLmNvbSIsImlhdCI6MTczNDcyMzUzMSwiZXhwIjoxNzM3MzE1NTMxfQ.P09OMl4IjIEwgGWXO4AykYtuCLw6cWLXkxuJ76Cw738"
+		}
+	]
+}

@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS "FriendList";
+DROP TABLE IF EXISTS "FriendInvitation";
 DROP TABLE IF EXISTS "EventPhoto";
 DROP TABLE IF EXISTS "Comment";
 DROP TABLE IF EXISTS "ParticipantList";
@@ -47,6 +48,9 @@ CREATE TABLE "Account" (
 
 INSERT into "Account"(first_name, last_name, password, email, phone_number, birthdate, profile_picture, online, last_online)
 VALUES ('Julien', 'Higginson', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi', 'j.h.gipson62@gmail.com', '0488221444', '06-01-2004', 1, true, null);
+
+Insert into "Account"(first_name, last_name, password, email, phone_number, birthdate, profile_picture, online, last_online)
+Values ('Maxence', 'Dessilly', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi', 'maxence@gmail.com', '0488221444', '06-01-2004', 1, true, null);
 -- The password is generated with Bcrypt and salt=10 "password"
 
 -- Create Admin table
@@ -58,10 +62,10 @@ CREATE TABLE "Admin" (
 );
 
 INSERT INTO "Admin" (name, email, password)
-VALUES ('Antoine', 'antoine@mail.com', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi');
+VALUES ('Maxence', 'maxence@gmail.com', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi');
 
 INSERT INTO "Admin" (name, email, password)
-VALUES ('Julien', 'j.h.gipson62@mail.com', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi');
+VALUES ('Julien', 'j.h.gipson62@gmail.com', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/ohHAKRkWGTns2yeZOOz.V6fNJi');
 
 -- Create FriendList table
 CREATE TABLE "FriendList" (
@@ -91,7 +95,7 @@ CREATE TABLE "Event" (
     date TIMESTAMP NOT NULL,
     reccurence TEXT,
     CONSTRAINT chk_reccurence_name CHECK (
-        reccurence IN ('weekly', 'bi-weekly', 'daily', 'monthly', 'bi-monthly', 'yearly')
+        reccurence IN ('weekly', 'bi-weekly', 'daily', 'monthly', 'bi-monthly', 'yearly', 'none')
     )
 );
 

@@ -68,8 +68,7 @@ router.patch("/heartbeat", authenticateToken, heartbeat);
 router.post("/", addAccount);
 router.post("/withPFP", upload.single("profile_picture"), addAccountWithpfp);
 router.patch("/", authenticateToken, authenticateAdmin, updateAccount);
-router.get("/:id", authenticateToken, getAccount);
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/ids", authenticateToken, async (req, res, next) => {
     const accountIDsParam = req.query.accountIDs;
 
     if (!accountIDsParam) {
@@ -77,8 +76,11 @@ router.get("/", authenticateToken, async (req, res) => {
     }
 
     const accountIDs = accountIDsParam.split(',').map(id => parseInt(id, 10));
+    console.log("IDs: ", accountIDs);
     req.query.accountIDs = accountIDs;
+    next();
 }, getMultipleAccounts);
+router.get("/id/:id", authenticateToken, getAccount);
 router.delete("/:id", authenticateToken, authenticateAdmin, deleteAccount);
 
 export default router;

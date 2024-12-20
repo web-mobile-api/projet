@@ -1,4 +1,4 @@
-import {readFileSync} from "node:fs";
+import { readFileSync } from "node:fs";
 import { pool } from "../../database/database.js";
 
 const requests = readFileSync(

@@ -1,14 +1,14 @@
-Il n'existe que 2 comptes par défaut dans la base de données, celui d'Antoine et celui de Julien. Ils sont tous les deux considérés comme administrateur.
+Il n'existe que 2 comptes par défaut dans la base de données, celui de Maxence et celui de Julien. Ils sont tous les deux considérés comme administrateur.
 
 Celui de Julien:
 {
     "email": "j.h.gipson62@gmail.com",
     "password": "password"
 }
-Celui d'Antoine:
+Celui de Maxence:
 {
-    "email": "antoine@gmail.com",
+    "email": "maxence@gmail.com",
     "password": "password"
 }
 
-Dans les tests Postman il y a plusieurs requêtes pour créer des comptes non administrateur.
+Dans les tests Postman il y a une requête pour créer un compte qui sera, pour le coup, non administrateur.

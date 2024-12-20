@@ -33,9 +33,10 @@ const router = Router();
  */
 
 router.post("/", authenticateToken, upload.single("photo"), addPhoto);
-router.patch("/", authenticateAdmin, authenticateToken, updatePhoto);
+router.patch("/", authenticateToken, authenticateAdmin, updatePhoto);
 router.get("/id/:id", authenticateToken, getPhotoById);
 router.get("/uploads/:filename", authenticateToken, getPhotoByPath);
-router.delete("/:id", authenticateAdmin, authenticateToken, deletePhoto);
+//This doesn't work for whatever reason
+router.delete("/:id", authenticateToken, authenticateAdmin, deletePhoto);
 
 export default router;

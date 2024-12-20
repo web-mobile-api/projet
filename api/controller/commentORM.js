@@ -115,8 +115,8 @@ export const addComment = async (req, res) => {
             data: {
                 date: new Date(Date.now()).toISOString(),
                 content,
-                author_id: parseInt(author_id),
-                event_id: parseInt(event_id)
+                author_id: author_id,
+                event_id: event_id
             },
             select: {
                 comment_id: true
@@ -158,7 +158,7 @@ export const deleteComment = async (req, res) => {
         });
         const comment = await prisma.comment.findUnique({
             where: {
-                comment_id: req.params.id
+                comment_id: parseInt(req.params.id)
             }
         });
         if ((account && comment) && (req.perm === Permission.Admin || account.account_id === comment.author_id)) {

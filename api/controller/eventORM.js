@@ -175,8 +175,8 @@ export const addEvent = async (req, res) => {
         const { location_id, author_id, name, date, reccurence } = req.body;
         const { event_id } = await prisma.event.create({
             data: {
-                location_id: parseInt(location_id),
-                author_id: parseInt(author_id),
+                location_id: location_id,
+                author_id: author_id,
                 name,
                 reccurence,
                 created_at: new Date(Date.now()).toISOString(),

@@ -307,4 +307,3 @@ export const deleteLocationById = async (req, res) => {
     }
 };
 
-
