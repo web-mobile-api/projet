@@ -4,8 +4,8 @@ FROM node:20.7.0-alpine
 # Set working directory
 WORKDIR /app
 
-# Install build tools
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache postgresql-client
+
 
 # Copy package files and install dependencies
 COPY package*.json ./
@@ -17,12 +17,13 @@ COPY .env ./
 # Copy all source code
 COPY . .
 
-RUN npx prisma generate
-
-RUN npm run initDB
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose the API port
 EXPOSE 3001
+
+ENTRYPOINT [ "entrypoint.sh" ]
 
 # Start the application
 CMD ["npm", "start"]

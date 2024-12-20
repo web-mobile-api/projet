@@ -1,10 +1,6 @@
-version: '3.8'
-
 services:
   api:
-    build:
-      context: ./
-      dockerfile: Dockerfile
+    build: .
     container_name: api
     environment:
       DB_HOST: postgres
@@ -17,12 +13,13 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
-
+    
   postgres:
     image: postgres
     container_name: postgres
     environment:
       POSTGRES_USER: ${USERDB}
+      PGUSER: ${USERDB}
       POSTGRES_PASSWORD: ${PASSWORDDB}
       POSTGRES_DB: ${DBNAME}
     ports:
