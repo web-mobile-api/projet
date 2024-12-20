@@ -36,13 +36,13 @@ CREATE TABLE "Account" (
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     password TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
+    email VARCHAR NOT NULL UNIQUE,
     phone_number TEXT NOT NULL,
     birthdate DATE NOT NULL,
     profile_picture INTEGER REFERENCES "Photo"(photo_id) NOT NULL,
     online bool,
     last_online TIMESTAMP,
-    CONSTRAINT chk_email_format CHECK (email LIKE '%_@_%.__%')
+    CONSTRAINT proper_email CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$')
 );
 
 INSERT into "Account"(first_name, last_name, password, email, phone_number, birthdate, profile_picture, online, last_online)
@@ -66,22 +66,26 @@ VALUES ('Julien', 'j.h.gipson62@mail.com', '$2b$10$ZgpdT2nPvLJ4X4lCC8MH3uICwG/oh
 -- Create FriendList table
 CREATE TABLE "FriendList" (
     friend_list_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    friend1_id INTEGER REFERENCES "Account"(account_id) ON UPDATE CASCADE ON DELETE CASCADE,
-    friend2_id INTEGER REFERENCES "Account"(account_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    friend1_id INTEGER REFERENCES "Account"(account_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE,
+    friend2_id INTEGER REFERENCES "Account"(account_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE,
     date TIMESTAMP NOT NULL,
     CONSTRAINT chk_friend_ids CHECK (friend1_id <> friend2_id)
 );
 
 -- Create FriendInvitation table
 CREATE TABLE "FriendInvitation" (
-    
+    invitation_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    sender_id INTEGER REFERENCES "Account"(account_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE,
+    receiver_id INTEGER REFERENCES "Account"(account_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE,
+    sent_at TIMESTAMP NOT NULL,
+    CONSTRAINT chk_sender_receiver CHECK (sender_id <> receiver_id)
 );
 
 -- Create Event table
 CREATE TABLE "Event" (
     event_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    location_id INTEGER REFERENCES "Location"(location_id),
-    author_id INTEGER REFERENCES "Account"(account_id),
+    location_id INTEGER REFERENCES "Location"(location_id) DEFERRABLE INITIALLY IMMEDIATE,
+    author_id INTEGER REFERENCES "Account"(account_id) DEFERRABLE INITIALLY IMMEDIATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     name TEXT NOT NULL,
     date TIMESTAMP NOT NULL,
@@ -93,8 +97,8 @@ CREATE TABLE "Event" (
 
 -- Create Participant List table
 CREATE TABLE "ParticipantList" (
-    account_id INTEGER REFERENCES "Account"(account_id),
-    event_id INTEGER REFERENCES "Event"(event_id),
+    account_id INTEGER REFERENCES "Account"(account_id) DEFERRABLE INITIALLY IMMEDIATE,
+    event_id INTEGER REFERENCES "Event"(event_id) DEFERRABLE INITIALLY IMMEDIATE,
     PRIMARY KEY (account_id, event_id)
 );
 
@@ -103,14 +107,14 @@ CREATE TABLE "Comment" (
     comment_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     content TEXT NOT NULL,
     date TIMESTAMP NOT NULL,
-    author_id INTEGER REFERENCES "Account"(account_id),
-    event_id INTEGER REFERENCES "Event"(event_id)
+    author_id INTEGER REFERENCES "Account"(account_id) DEFERRABLE INITIALLY IMMEDIATE,
+    event_id INTEGER REFERENCES "Event"(event_id) DEFERRABLE INITIALLY IMMEDIATE
 );
 
 -- Create EventPhoto table
 CREATE TABLE "EventPhoto" (
     event_photo_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    event_id INTEGER REFERENCES "Event"(event_id),
-    photo_id INTEGER REFERENCES "Photo"(photo_id)
+    event_id INTEGER REFERENCES "Event"(event_id) DEFERRABLE INITIALLY IMMEDIATE,
+    photo_id INTEGER REFERENCES "Photo"(photo_id) DEFERRABLE INITIALLY IMMEDIATE
 );
 

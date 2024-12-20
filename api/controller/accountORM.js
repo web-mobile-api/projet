@@ -48,12 +48,13 @@ export const getMultipleAccounts = async (req, res) => {
 export const addAccount = async (req, res) => {
     try {
         const { first_name, last_name, password, email, phone_number, birthdate, profile_picture } = req.body;
+
         const { account_id } = await prisma.account.create({
             data: {
                 first_name,
                 last_name,
                 password,
-                email: email.toLowerCase(),
+                email: email,
                 phone_number,
                 birthdate: (new Date(birthdate)).toISOString(),
                 profile_picture: profile_picture === undefined ? 1 : profile_picture,
