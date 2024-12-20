@@ -1,6 +1,26 @@
 import prisma from "../database/databaseORM.js";
-import { Permission } from "../scripts/JS/authMiddleware.js";
+import { Permission } from "../middleware/authMiddleware.js";
 
+/**
+ * @swagger
+ * /v1/friendList/{id}:
+ *   get:
+ *     summary: Retrieve the friend list of a specific account
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The account ID
+ *     responses:
+ *       200:
+ *         description: A list of friends
+ *       404:
+ *         description: Friend list not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getFriendList = async (req, res)=> {
     try {
         const id = parseInt(req.params.id);
@@ -33,6 +53,28 @@ export const getFriendList = async (req, res)=> {
     }
 };
 
+/**
+ * @swagger
+ * /v1/friendList:
+ *   post:
+ *     summary: Add a new friendship
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               friend1_id:
+ *                 type: integer
+ *               friend2_id:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Friendship created
+ *       500:
+ *         description: Internal server error
+ */
 export const addFriendShip = async (req, res) => {
     try {
         const { friend1_id, friend2_id } = req.body;
@@ -53,6 +95,30 @@ export const addFriendShip = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /v1/friendList:
+ *   patch:
+ *     summary: Update an existing friendship
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               friend1_id:
+ *                 type: integer
+ *               friend2_id:
+ *                 type: integer
+ *     responses:
+ *       204:
+ *         description: Friendship updated
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
 export const updateFriendShip = async (req, res) => {
     try {
         const account = await prisma.account.findUnique({
@@ -81,6 +147,24 @@ export const updateFriendShip = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /v1/friendList/{id}:
+ *   delete:
+ *     summary: Delete a friendship by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The friendship ID
+ *     responses:
+ *       204:
+ *         description: Friendship deleted
+ *       500:
+ *         description: Internal server error
+ */
 export const deleteFriendShip = async (req, res) => {
     try {
         await prisma.friendList.delete({

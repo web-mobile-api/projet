@@ -1,4 +1,4 @@
-import prisma from "../../database/databaseORM.js";
+import prisma from "../database/databaseORM.js";
 import { verifyToken } from "./jwtUtils.js";
 
 export const Permission = {

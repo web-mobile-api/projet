@@ -1,7 +1,7 @@
 import prisma from "../database/databaseORM.js";
 import multer from "multer";
 import fs from "fs";
-import { Permission } from "../scripts/JS/authMiddleware.js";
+import { Permission } from "../middleware/authMiddleware.js";
 
 const uploadDir = "./uploads";
 
@@ -17,6 +17,26 @@ const storage = multer.diskStorage({
 
 export const upload = multer({ storage });
 
+/**
+ * @swagger
+ * /v1/photo/id/{id}:
+ *   get:
+ *     summary: Retrieve a photo by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The photo ID
+ *     responses:
+ *       200:
+ *         description: A single photo
+ *       404:
+ *         description: Photo not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getPhotoById = async (req, res)=> {
     try {
         const photo = await prisma.photo.findUnique({
@@ -35,6 +55,26 @@ export const getPhotoById = async (req, res)=> {
     }
 };
 
+/**
+ * @swagger
+ * /v1/photo/uploads/{filename}:
+ *   get:
+ *     summary: Retrieve a photo by filename
+ *     parameters:
+ *       - in: path
+ *         name: filename
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The photo filename
+ *     responses:
+ *       200:
+ *         description: A single photo
+ *       404:
+ *         description: Photo not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getPhotoByPath = async (req, res)=> {
     try {
         const photo = await prisma.photo.findUnique({
@@ -53,6 +93,27 @@ export const getPhotoByPath = async (req, res)=> {
     }
 };
 
+/**
+ * @swagger
+ * /v1/photo:
+ *   post:
+ *     summary: Add a new photo
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Photo uploaded successfully
+ *       500:
+ *         description: Failed to upload photo
+ */
 export const addPhoto = async (req, res) => {
     try {
         console.log(req.file)
@@ -74,7 +135,39 @@ export const addPhoto = async (req, res) => {
     }
 };
 
-//add the author_id in photo so we know if a user can or can't update a photo
+/**
+ * @swagger
+ * /v1/photo:
+ *   patch:
+ *     summary: Update an existing photo
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone_number:
+ *                 type: string
+ *               birthdate:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       204:
+ *         description: Photo updated
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
 export const updatePhoto = async (req, res) => {
     try {
         if (req.perm === Permission.Admin){
@@ -102,6 +195,24 @@ export const updatePhoto = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /v1/photo/{id}:
+ *   delete:
+ *     summary: Delete a photo by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The photo ID
+ *     responses:
+ *       204:
+ *         description: Photo deleted
+ *       500:
+ *         description: Internal server error
+ */
 export const deletePhoto = async (req, res) => {
     try {
         if (req.perm === Permission.Admin){

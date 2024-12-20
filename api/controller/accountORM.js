@@ -1,11 +1,30 @@
 import prisma from "../database/databaseORM.js";
-import { Permission } from "../scripts/JS/authMiddleware.js";
+import { Permission } from "../middleware/authMiddleware.js";
 import { exclude } from "../scripts/JS/omitField.js";
 import bcryptjs from "bcryptjs";
-import { generateToken } from "../scripts/JS/jwtUtils.js";
+import { generateToken } from "../middleware/jwtUtils.js";
 const salt = bcryptjs.genSaltSync();
 
-
+/**
+ * @swagger
+ * /v1/account/{id}:
+ *   get:
+ *     summary: Retrieve a single account by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The account ID
+ *     responses:
+ *       200:
+ *         description: A single account
+ *       404:
+ *         description: Account not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getAccount = async (req, res)=> {
     try {
         const account = await prisma.account.findUnique({
@@ -25,9 +44,29 @@ export const getAccount = async (req, res)=> {
     }
 };
 
+/**
+ * @swagger
+ * /v1/account:
+ *   get:
+ *     summary: Retrieve multiple accounts by IDs
+ *     parameters:
+ *       - in: query
+ *         name: accountIDs
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Comma-separated list of account IDs
+ *     responses:
+ *       200:
+ *         description: A list of accounts
+ *       404:
+ *         description: Accounts not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getMultipleAccounts = async (req, res) => {
     try {
-        const { accountIds } = req.body;
+        const accountIds = req.query.accountIds;
         const accounts = await prisma.account.findMany({
             where: {
                 account_id: {
@@ -45,6 +84,39 @@ export const getMultipleAccounts = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /v1/account:
+ *   post:
+ *     summary: Create a new account
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone_number:
+ *                 type: string
+ *               birthdate:
+ *                 type: string
+ *                 format: date
+ *               profile_picture:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Account created
+ *       500:
+ *         description: Internal server error
+ */
 export const addAccount = async (req, res) => {
     try {
         const { first_name, last_name, password, email, phone_number, birthdate, profile_picture } = req.body;
@@ -72,6 +144,41 @@ export const addAccount = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /v1/account:
+ *   patch:
+ *     summary: Update an existing account
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               account_id:
+ *                 type: integer
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone_number:
+ *                 type: string
+ *               birthdate:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       204:
+ *         description: Account updated
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
 export const updateAccount = async (req, res) => {
     try {
         const account = await prisma.account.findUnique({
@@ -113,6 +220,26 @@ export const updateAccount = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /v1/account/{id}:
+ *   delete:
+ *     summary: Delete an account by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The account ID
+ *     responses:
+ *       204:
+ *         description: Account deleted
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
 //Will be changed for a transaction later
 export const deleteAccount = async (req, res) => {
     try {
@@ -139,6 +266,17 @@ export const deleteAccount = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /v1/account/heartbeat:
+ *   patch:
+ *     summary: Update the online status of an account
+ *     responses:
+ *       200:
+ *         description: Status updated
+ *       500:
+ *         description: Internal server error
+ */
 export const heartbeat = async(req, res) => {
     const email = req.user.email;
 
@@ -170,6 +308,30 @@ export const heartbeat = async(req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /v1/account/login:
+ *   post:
+ *     summary: Login to an account
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ */
 export const login = async (req, res) => {
     const { email, password } = req.body;
 

@@ -1,9 +1,29 @@
 import prisma from "../database/databaseORM";
-import { Permission } from "../scripts/JS/authMiddleware";
+import { Permission } from "../middleware/authMiddleware";
 
+/**
+ * @swagger
+ * /v1/invitation:
+ *   post:
+ *     summary: Add a new invitation
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               receiver_id:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Invitation created
+ *       500:
+ *         description: Internal server error
+ */
 export const addInvitation = async (req, res) => {
     try {
-        const { receiver_id } = req.boy;
+        const { receiver_id } = req.body;
         const sender_id = await prisma.account.findUnique({
             where: {
                 email: req.user.email
@@ -29,6 +49,24 @@ export const addInvitation = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /v1/invitation/{id}:
+ *   delete:
+ *     summary: Delete an invitation by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The invitation ID
+ *     responses:
+ *       204:
+ *         description: Invitation deleted
+ *       500:
+ *         description: Internal server error
+ */
 export const deleteInvitation = async (req, res) => {
     try {
         const invitation_id = req.params.id;
@@ -52,7 +90,29 @@ export const deleteInvitation = async (req, res) => {
     }
 }
 
-export const updateInvitiation = async (req, res) => {
+/**
+ * @swagger
+ * /v1/invitation:
+ *   patch:
+ *     summary: Update an existing invitation
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               invitation_id:
+ *                 type: integer
+ *               status:
+ *                 type: string
+ *     responses:
+ *       204:
+ *         description: Invitation updated
+ *       500:
+ *         description: Internal server error
+ */
+export const updateInvitation = async (req, res) => {
     try {
         const { invitation_id, status } = req.body;
         if (status === "accepted") {
@@ -95,6 +155,26 @@ export const updateInvitiation = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /v1/invitations/receiver:
+ *   get:
+ *     summary: Retrieve invitations received by a specific account
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The account ID
+ *     responses:
+ *       200:
+ *         description: A list of received invitations
+ *       404:
+ *         description: Invitations not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getInvitationsAsReceiver = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
@@ -120,6 +200,26 @@ export const getInvitationsAsReceiver = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /v1/invitations/sender:
+ *   get:
+ *     summary: Retrieve invitations sent by a specific account
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The account ID
+ *     responses:
+ *       200:
+ *         description: A list of sent invitations
+ *       404:
+ *         description: Invitations not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getInvitationsAsSender = async (req, res) => {
     try {
         const id = parseInt(req.params.id);

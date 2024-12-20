@@ -1,8 +1,42 @@
 import prisma from "../database/databaseORM.js";
 import bcryptjs from "bcryptjs";
-import { Permission } from "../scripts/JS/authMiddleware.js";
+import { Permission } from "../middleware/authMiddleware.js";
 const salt = bcryptjs.genSaltSync();
 
+/**
+ * @swagger
+ * /v1/account/withPFP:
+ *   post:
+ *     summary: Create a new account with profile picture
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone_number:
+ *                 type: string
+ *               birthdate:
+ *                 type: string
+ *                 format: date
+ *               profile_picture:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Account created
+ *       500:
+ *         description: Internal server error
+ */
 export const addAccountWithpfp = async (req, res) => {
     try {
         const { first_name, last_name, password, email, phone_number, birthdate } = req.body;
@@ -41,6 +75,26 @@ export const addAccountWithpfp = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /v1/account/{id}:
+ *   delete:
+ *     summary: Delete an account by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The account ID
+ *     responses:
+ *       204:
+ *         description: Account deleted
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
 export const deleteAccount = async (req, res) => {
     try {
         const account_id = req.params.id;

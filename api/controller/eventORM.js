@@ -1,6 +1,19 @@
 import prisma from "../database/databaseORM.js";
-import { Permission } from "../scripts/JS/authMiddleware.js";
+import { Permission } from "../middleware/authMiddleware.js";
 
+/**
+ * @swagger
+ * /v1/events:
+ *   get:
+ *     summary: Retrieve all upcoming events
+ *     responses:
+ *       200:
+ *         description: A list of upcoming events
+ *       404:
+ *         description: Events not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getAllEvents = async (req, res) => {
     try {
         const events = await prisma.event.findMany({
@@ -32,6 +45,26 @@ export const getAllEvents = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /v1/events/{account_id}:
+ *   get:
+ *     summary: Retrieve events from a specific author
+ *     parameters:
+ *       - in: path
+ *         name: account_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The author ID
+ *     responses:
+ *       200:
+ *         description: A list of events
+ *       404:
+ *         description: Events not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getEventsFrom = async(req, res) => {
     try {
         const events = await prisma.account.findUnique({
@@ -57,6 +90,26 @@ export const getEventsFrom = async(req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /v1/event/{id}:
+ *   get:
+ *     summary: Retrieve a single event by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The event ID
+ *     responses:
+ *       200:
+ *         description: A single event
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal server error
+ */
 export const getEvent = async (req, res)=> {
     try {
         const event_id = parseInt(req.params.id);
@@ -88,7 +141,35 @@ export const getEvent = async (req, res)=> {
     }
 };
 
-//This could become a transaction or we just put a default pfp
+/**
+ * @swagger
+ * /v1/event:
+ *   post:
+ *     summary: Create a new event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               location_id:
+ *                 type: integer
+ *               author_id:
+ *                 type: integer
+ *               name:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               reccurence:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Event created
+ *       500:
+ *         description: Internal server error
+ */
 export const addEvent = async (req, res) => {
     try {
         const { location_id, author_id, name, date, reccurence } = req.body;
@@ -112,6 +193,39 @@ export const addEvent = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /v1/event:
+ *   patch:
+ *     summary: Update an existing event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               event_id:
+ *                 type: integer
+ *               location_id:
+ *                 type: integer
+ *               author_id:
+ *                 type: integer
+ *               name:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               reccurence:
+ *                 type: string
+ *     responses:
+ *       204:
+ *         description: Event updated
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
 export const updateEvent = async (req, res) => {
     try {
         const account = await prisma.account.findUnique({
@@ -143,6 +257,26 @@ export const updateEvent = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /v1/event/{id}:
+ *   delete:
+ *     summary: Delete an event by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The event ID
+ *     responses:
+ *       204:
+ *         description: Event deleted
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal server error
+ */
 export const deleteEvent = async (req, res) => {
     try {
         const account = await prisma.account.findUnique({

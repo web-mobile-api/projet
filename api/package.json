@@ -23,11 +23,13 @@
     "scripts": {
         "start": "node ./server.js",
         "dev": "nodemon ./server.js",
-        "initDB": "node ./scripts/JS/initDB.js"
+        "initDB": "node ./scripts/JS/initDB.js",
+        "genDoc": "node ./swagger/swagger_jsdoc.js"
     },
     "devDependencies": {
         "nodemon": "^3.1.7",
         "prisma": "^6.0.1",
+        "swagger-jsdoc": "^6.2.8",
         "typescript": "^5.7.2"
     }
 }

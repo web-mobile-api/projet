@@ -1,6 +1,6 @@
 import express from "express";
 import {statusCleanUp} from "./scripts/JS/statusCleanUp.js";
-import {default as Router} from "./route/index.js";
+import {default as Router} from "./routes/index.js";
 import internalIp from 'internal-ip';
 
 const internalIP = internalIp.v4.sync();
