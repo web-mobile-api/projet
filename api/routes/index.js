@@ -9,6 +9,7 @@ import { default as v1CommentRouter } from './v1/comment.js';
 const router = Router();
 
 const v1Router = Router();
+const v2Router = Router();
 
 v1Router.use('/account', v1AccountRouter);
 v1Router.use('/location', v1LocationRouter);
@@ -18,5 +19,6 @@ v1Router.use('/event', v1EventRouter);
 v1Router.use('/comment', v1CommentRouter);
 
 router.use('/v1', v1Router);
+router.use('/v2', v2Router);
 
 export default router;
