@@ -73,7 +73,7 @@ const CreateEventScreen = () => {
       });
     }
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       setImage(result.uri);
     }
   };

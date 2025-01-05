@@ -371,7 +371,8 @@ export const login = async (req, res) => {
                 "en":"Login successful!",
                 "fr": "Connexion réussie!"
             },
-            token: token
+            token: token,
+            user //this wasn't in the original code
         });
     } catch (error) {
         console.error(error);

@@ -7,15 +7,19 @@ export const RECCURENCE = {
     YEARLY: "yearly"
 }
 
-//Comments and photos are loaded on demand (with the getComments(), getPhotos())
 export class Event {
-    constructor(id, location, name, reccurence, author, controller) {
-        this.id = id;
-        this.location = location;
+    
+    constructor(event_id, location_id, author_id, created_at, name, date, reccurence) {
+        this.id = event_id;
+        this.location_id = location_id;
         this.name = name;
         this.reccurence = reccurence;
-        this.author = author;
-        this.controller = controller;
+        this.author_id = author_id;
+        this.created_at = created_at;
+        this.date = date;
+    }
+    constructor() {
+        
     }
     get comments() {
         if (this.comments) {
