@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, Button, ScrollView, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -6,10 +6,12 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import * as Location from 'expo-location';
+import { LanguageContext } from './LanguageContext';
 
 const initialEvents = [
   // Initial events
 ];
+
 function getCurrentDate() {
   const today = new Date();
   const day = String(today.getDate()).padStart(2, '0');
@@ -19,6 +21,7 @@ function getCurrentDate() {
 }
 
 const HomeScreen = ({ route }) => {
+  const { language } = useContext(LanguageContext);
   const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(getCurrentDate());
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -55,7 +58,10 @@ const HomeScreen = ({ route }) => {
     const getLocation = async () => {
       let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
       if (locationStatus !== 'granted') {
-        Alert.alert('Permission refusée', 'Désolé, nous avons besoin de l\'autorisation de localisation pour suggérer des adresses.');
+        Alert.alert(
+          language === 'fr' ? 'Permission refusée' : 'Permission Denied',
+          language === 'fr' ? 'Désolé, nous avons besoin de l\'autorisation de localisation pour suggérer des adresses.' : 'Sorry, we need location permission to suggest addresses.'
+        );
         return;
       }
       let currentLocation = await Location.getCurrentPositionAsync({});
@@ -69,7 +75,7 @@ const HomeScreen = ({ route }) => {
     };
 
     getLocation();
-  }, []);
+  }, [language]);
 
   const toggleFilterModal = () => {
     setFilterModalVisible(!isFilterModalVisible);
@@ -109,6 +115,21 @@ const HomeScreen = ({ route }) => {
     navigation.navigate('Friends');
   };
 
+  const handleRecenterPress = () => {
+    console.log('Recenter button pressed');
+    if (location) {
+      console.log('Location:', location.coords);
+      setMapRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.015,
+        longitudeDelta: 0.0121,
+      });
+    } else {
+      console.log('Location is not available');
+    }
+  };
+
   const getMinDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -126,7 +147,7 @@ const HomeScreen = ({ route }) => {
         <View style={styles.mapContainer}>
           {mapRegion ? (
             <MapView style={styles.map} region={mapRegion}>
-              {location && <Marker coordinate={location.coords} title="Votre position" pinColor="blue" />}
+              {location && <Marker coordinate={location.coords} title={language === 'fr' ? "Votre position" : "Your location"} pinColor="blue" />}
               {filteredEvents.map(event => (
                 <Marker
                   key={event.id}
@@ -147,24 +168,27 @@ const HomeScreen = ({ route }) => {
           <TouchableOpacity style={styles.createEventButton} onPress={handleCreateEventPress}>
             <Icon name="plus" size={25} color="#6200EE" />
           </TouchableOpacity>
+          <TouchableOpacity style={styles.recenterButton} onPress={handleRecenterPress}>
+            <Icon name="crosshairs" size={25} color="#6200EE" />
+          </TouchableOpacity>
         </View>
         <View style={styles.menu}>
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Friends')}>
             <View style={styles.iconContainer}>
               <Icon name="users" size={20} color="#808080" />
-              <Text style={[styles.menuText, { color: '#808080' }]}>Amis</Text>
+              <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Amis" : "Friends"}</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
             <View style={styles.iconContainer}>
               <Icon name="map" size={25} color="#6200EE" />
-              <Text style={[styles.menuText, { color: '#6200EE' }]}>Carte</Text>
+              <Text style={[styles.menuText, { color: '#6200EE' }]}>{language === 'fr' ? "Carte" : "Map"}</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
             <View style={styles.iconContainer}>
               <Icon name="cog" size={20} color="#808080" />
-              <Text style={[styles.menuText, { color: '#808080' }]}>Para.</Text>
+              <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Para." : "Settings"}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -180,7 +204,7 @@ const HomeScreen = ({ route }) => {
                 <Icon name="times" size={20} color="#6200EE" />
               </TouchableOpacity>
               <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                <Text style={styles.modalTitle}>Filtrer les événements</Text>
+                <Text style={styles.modalTitle}>{language === 'fr' ? "Filtrer les événements" : "Filter Events"}</Text>
                 <Calendar
                   onDayPress={handleDayPress}
                   markedDates={{
@@ -211,7 +235,7 @@ const HomeScreen = ({ route }) => {
                     textDayHeaderFontSize: 16
                   }}
                 />
-                <Button title="Appliquer les filtres" onPress={() => applyFilters(selectedDate)} color="#6200EE" />
+                <Button title={language === 'fr' ? "Appliquer les filtres" : "Apply Filters"} onPress={() => applyFilters(selectedDate)} color="#6200EE" />
               </ScrollView>
             </View>
           </View>
@@ -263,6 +287,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
+    backgroundColor: '#fff',
+    borderRadius: 50,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  recenterButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
     backgroundColor: '#fff',
     borderRadius: 50,
     padding: 10,

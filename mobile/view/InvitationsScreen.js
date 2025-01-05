@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
+import { LanguageContext } from './LanguageContext';
 
 const InvitationsScreen = () => {
+  const { language } = useContext(LanguageContext);
   const navigation = useNavigation();
 
   const [friends, setFriends] = useState([
@@ -30,10 +32,10 @@ const InvitationsScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={[styles.headerButton, styles.activeTab]} onPress={() => navigation.navigate('Invitations')}>
-          <Text style={styles.headerText}>Invitations</Text>
+          <Text style={styles.headerText}>{language === 'fr' ? "Invitations" : "Invitations"}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.headerButton, styles.inactiveTab]} onPress={() => navigation.navigate('Suggestions')}>
-          <Text style={styles.headerText}>Suggestions</Text>
+          <Text style={styles.headerText}>{language === 'fr' ? "Suggestions" : "Suggestions"}</Text>
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.invitationsList}>
@@ -42,14 +44,14 @@ const InvitationsScreen = () => {
             <Image source={invitation.avatar} style={styles.avatar} />
             <View style={styles.invitationDetails}>
               <Text style={styles.invitationName}>{invitation.name}</Text>
-              <Text style={styles.mutualFriends}>{invitation.mutualFriends} ami(e)s en commun</Text>
+              <Text style={styles.mutualFriends}>{invitation.mutualFriends} {language === 'fr' ? "ami(e)s en commun" : "mutual friends"}</Text>
             </View>
             <View style={styles.buttonsContainer}>
               <TouchableOpacity onPress={() => handleAcceptInvitation(invitation)} style={styles.acceptButton}>
-                <Text style={styles.buttonText}>Ajouter</Text>
+                <Text style={styles.buttonText}>{language === 'fr' ? "Ajouter" : "Add"}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleRejectInvitation(invitation.id)} style={styles.rejectButton}>
-                <Text style={styles.buttonText}>Supprimer</Text>
+                <Text style={styles.buttonText}>{language === 'fr' ? "Supprimer" : "Remove"}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -58,20 +60,20 @@ const InvitationsScreen = () => {
       <View style={styles.menu}>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Friends')}>
           <View style={styles.iconContainer}>
-            <Icon name="users" size={20} color="#6200EE" />
-            <Text style={[styles.menuText, { color: '#6200EE' }]}>Amis</Text>
+            <Icon name="users" size={25} color="#6200EE" />
+            <Text style={[styles.menuText, { color: '#6200EE' }]}>{language === 'fr' ? "Amis" : "Friends"}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
           <View style={styles.iconContainer}>
-            <Icon name="map" size={25} color="#808080" />
-            <Text style={[styles.menuText, { color: '#808080' }]}>Carte</Text>
+            <Icon name="map" size={20} color="#808080" />
+            <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Carte" : "Map"}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
           <View style={styles.iconContainer}>
             <Icon name="cog" size={20} color="#808080" />
-            <Text style={[styles.menuText, { color: '#808080' }]}>Para.</Text>
+            <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Para." : "Settings"}</Text>
           </View>
         </TouchableOpacity>
       </View>

@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Alert, Keyboard } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { LanguageContext } from './LanguageContext';
 
 const FriendsScreen = () => {
+  const { language } = useContext(LanguageContext);
   const navigation = useNavigation();
 
   const [friends, setFriends] = useState([
@@ -51,15 +53,15 @@ const FriendsScreen = () => {
 
   const handleDeleteFriend = (id) => {
     Alert.alert(
-      'Supprimer l\'ami',
-      'Êtes-vous sûr de vouloir supprimer cet ami ?',
+      language === 'fr' ? 'Supprimer l\'ami' : 'Delete Friend',
+      language === 'fr' ? 'Êtes-vous sûr de vouloir supprimer cet ami ?' : 'Are you sure you want to delete this friend?',
       [
         {
-          text: 'Annuler',
+          text: language === 'fr' ? 'Annuler' : 'Cancel',
           style: 'cancel',
         },
         {
-          text: 'Supprimer',
+          text: language === 'fr' ? 'Supprimer' : 'Delete',
           onPress: () => {
             const updatedFriends = friends.filter(friend => friend.id !== id);
             setFriends(updatedFriends);
@@ -89,7 +91,7 @@ const FriendsScreen = () => {
           <Icon name="search" size={20} color="#808080" style={styles.searchIcon} />
           <TextInput
             style={styles.searchBar}
-            placeholder="Rechercher un ami"
+            placeholder={language === 'fr' ? "Rechercher un ami" : "Search for a friend"}
             value={searchQuery}
             onChangeText={handleSearch}
           />
@@ -100,7 +102,7 @@ const FriendsScreen = () => {
               <Image source={friend.avatar} style={styles.avatar} />
               <View style={styles.friendDetails}>
                 <Text style={styles.friendName}>{friend.name}</Text>
-                <Text style={styles.mutualFriends}>{friend.mutualFriends} ami(e)s en commun</Text>
+                <Text style={styles.mutualFriends}>{friend.mutualFriends} {language === 'fr' ? "ami(e)s en commun" : "mutual friends"}</Text>
               </View>
               <TouchableOpacity onPress={() => handleDeleteFriend(friend.id)} style={styles.deleteButton}>
                 <Icon name="trash" size={20} color="#808080" />
@@ -112,20 +114,20 @@ const FriendsScreen = () => {
           <View style={styles.menu}>
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Friends')}>
               <View style={styles.iconContainer}>
-                <Icon name="users" size={20} color="#6200EE" />
-                <Text style={[styles.menuText, { color: '#6200EE' }]}>Amis</Text>
+                <Icon name="users" size={25} color="#6200EE" />
+                <Text style={[styles.menuText, { color: '#6200EE' }]}>{language === 'fr' ? "Amis" : "Friends"}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
               <View style={styles.iconContainer}>
-                <Icon name="map" size={25} color="#808080" />
-                <Text style={[styles.menuText, { color: '#808080' }]}>Carte</Text>
+                <Icon name="map" size={20} color="#808080" />
+                <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Carte" : "Map"}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
               <View style={styles.iconContainer}>
                 <Icon name="cog" size={20} color="#808080" />
-                <Text style={[styles.menuText, { color: '#808080' }]}>Para.</Text>
+                <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Para." : "Settings"}</Text>
               </View>
             </TouchableOpacity>
           </View>

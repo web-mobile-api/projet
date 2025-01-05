@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
 import ActionSheet from 'react-native-actionsheet';
 import * as Location from 'expo-location';
+import { LanguageContext } from './LanguageContext';
 
 const CreateEventScreen = () => {
+  const { language } = useContext(LanguageContext);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState('Type');
-  const [price, setPrice] = useState('');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
@@ -34,12 +33,18 @@ const CreateEventScreen = () => {
     (async () => {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission refusée', 'Désolé, nous avons besoin de l\'autorisation de la caméra pour prendre des photos.');
+        Alert.alert(
+          language === 'fr' ? 'Permission refusée' : 'Permission Denied',
+          language === 'fr' ? 'Désolé, nous avons besoin de l\'autorisation de la caméra pour prendre des photos.' : 'Sorry, we need camera permission to take photos.'
+        );
       }
 
       const locationStatus = await Location.requestForegroundPermissionsAsync();
       if (locationStatus.status !== 'granted') {
-        Alert.alert('Permission refusée', 'Désolé, nous avons besoin de l\'autorisation de localisation pour obtenir votre adresse.');
+        Alert.alert(
+          language === 'fr' ? 'Permission refusée' : 'Permission Denied',
+          language === 'fr' ? 'Désolé, nous avons besoin de l\'autorisation de localisation pour obtenir votre adresse.' : 'Sorry, we need location permission to get your address.'
+        );
         return;
       }
 
@@ -53,7 +58,7 @@ const CreateEventScreen = () => {
         setAddress(`${street}, ${city}, ${region} ${postalCode}, ${country}`);
       }
     })();
-  }, []);
+  }, [language]);
 
   const handleImagePicker = async (source) => {
     let result;
@@ -87,8 +92,6 @@ const CreateEventScreen = () => {
       id: uuidv4(),
       title,
       description,
-      type,
-      price: parseFloat(price),
       startDate: { day: startDate.getDate(), month: startDate.getMonth() + 1, year: startDate.getFullYear() },
       endDate: { day: endDate.getDate(), month: endDate.getMonth() + 1, year: endDate.getFullYear() },
       startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -133,56 +136,36 @@ const CreateEventScreen = () => {
       <Image source={require('./assets/logo.png')} style={styles.logo} />
       <TextInput
         style={styles.input}
-        placeholder="Titre"
+        placeholder={language === 'fr' ? "Titre" : "Title"}
         value={title}
         onChangeText={setTitle}
       />
       <TextInput
         style={styles.input}
-        placeholder="Description"
+        placeholder={language === 'fr' ? "Description" : "Description"}
         value={description}
         onChangeText={setDescription}
       />
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={type}
-          onValueChange={(itemValue) => setType(itemValue)}
-          style={styles.picker}
-          mode="dropdown"
-        >
-          <Picker.Item label="Type" value="Type" />
-          <Picker.Item label="Soirée" value="Soirée" />
-          <Picker.Item label="Concert" value="Concert" />
-          <Picker.Item label="Événement sportif" value="Événement sportif" />
-        </Picker>
-      </View>
       <TextInput
         style={styles.input}
-        placeholder="Prix"
-        value={price}
-        onChangeText={setPrice}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Organisateur"
+        placeholder={language === 'fr' ? "Organisateur" : "Organizer"}
         value={organisateur}
         onChangeText={setOrganisateur}
       />
       <TextInput
         style={styles.input}
-        placeholder="Pour qui ?"
+        placeholder={language === 'fr' ? "Pour qui ?" : "For whom?"}
         value={publicInfo}
         onChangeText={setPublicInfo}
       />
       <TextInput
         style={styles.input}
-        placeholder="Adresse"
+        placeholder={language === 'fr' ? "Adresse" : "Address"}
         value={address}
         onChangeText={setAddress}
-        editable={true} 
+        editable={true}
       />
-      <Text style={styles.label}>Heure de début</Text>
+      <Text style={styles.label}>{language === 'fr' ? "Heure de début" : "Start Time"}</Text>
       <TouchableOpacity style={styles.input} onPress={() => setShowStartTimePicker(true)}>
         <Text style={styles.datePickerButtonTextGray}>
           {startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -198,7 +181,7 @@ const CreateEventScreen = () => {
           onChange={onChangeStartTime}
         />
       )}
-      <Text style={styles.label}>Heure de fin</Text>
+      <Text style={styles.label}>{language === 'fr' ? "Heure de fin" : "End Time"}</Text>
       <TouchableOpacity style={styles.input} onPress={() => setShowEndTimePicker(true)}>
         <Text style={styles.datePickerButtonTextGray}>
           {endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -214,7 +197,7 @@ const CreateEventScreen = () => {
           onChange={onChangeEndTime}
         />
       )}
-      <Text style={styles.label}>Date de début</Text>
+      <Text style={styles.label}>{language === 'fr' ? "Date de début" : "Start Date"}</Text>
       <TouchableOpacity style={styles.input} onPress={() => setShowStartDatePicker(true)}>
         <Text style={styles.datePickerButtonTextGray}>
           {startDate.toLocaleDateString()}
@@ -230,7 +213,7 @@ const CreateEventScreen = () => {
           minimumDate={new Date()}
         />
       )}
-      <Text style={styles.label}>Date de fin</Text>
+      <Text style={styles.label}>{language === 'fr' ? "Date de fin" : "End Date"}</Text>
       <TouchableOpacity style={styles.input} onPress={() => setShowEndDatePicker(true)}>
         <Text style={styles.datePickerButtonTextGray}>
           {endDate.toLocaleDateString()}
@@ -247,16 +230,16 @@ const CreateEventScreen = () => {
         />
       )}
       <TouchableOpacity style={styles.imagePicker} onPress={showImagePickerOptions}>
-        <Text style={styles.imagePickerText}>Ajouter une photo</Text>
+        <Text style={styles.imagePickerText}>{language === 'fr' ? "Ajouter une photo" : "Add a photo"}</Text>
       </TouchableOpacity>
       {image && <Image source={{ uri: image }} style={styles.image} />}
       <TouchableOpacity style={styles.createButton} onPress={handleCreateEvent}>
-        <Text style={styles.createButtonText}>Créer l'événement</Text>
+        <Text style={styles.createButtonText}>{language === 'fr' ? "Créer l'événement" : "Create Event"}</Text>
       </TouchableOpacity>
       <ActionSheet
         ref={actionSheetRef}
-        title="Choisir une photo"
-        options={['Annuler', 'Prendre une photo', 'Choisir de la galerie']}
+        title={language === 'fr' ? "Choisir une photo" : "Choose a photo"}
+        options={[language === 'fr' ? 'Annuler' : 'Cancel', language === 'fr' ? 'Prendre une photo' : 'Take a photo', language === 'fr' ? 'Choisir de la galerie' : 'Choose from gallery']}
         cancelButtonIndex={0}
         onPress={(index) => {
           if (index === 1) {
@@ -280,32 +263,26 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 100,
-    marginBottom: 10,
-    borderRadius: 10,
+    marginBottom: 20,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   input: {
     width: '100%',
-    height: 40,
+    height: 50,
     borderColor: '#6200EE',
     borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pickerContainer: {
-    width: '100%',
-    marginBottom: 10,
-    borderColor: '#6200EE',
-    borderWidth: 1,
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  picker: {
-    width: '100%',
-    height: 60,
-    fontSize: 16,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
   datePickerButtonTextGray: {
     color: 'gray',
@@ -313,38 +290,52 @@ const styles = StyleSheet.create({
   },
   imagePicker: {
     backgroundColor: '#6200EE',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
     width: '100%',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   imagePickerText: {
     color: '#fff',
-    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   image: {
     width: '100%',
     height: 200,
     marginBottom: 20,
-    borderRadius: 10,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   label: {
     fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 10,
     color: '#6200EE',
+    fontWeight: 'bold',
   },
   createButton: {
     backgroundColor: '#FFD700', // Couleur jaune doré
-    padding: 10,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 10,
     width: '100%',
     alignItems: 'center',
     marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   createButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

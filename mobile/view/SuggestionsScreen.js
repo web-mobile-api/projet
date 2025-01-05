@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
+import { LanguageContext } from './LanguageContext';
 
 const SuggestionsScreen = () => {
+  const { language } = useContext(LanguageContext);
   const navigation = useNavigation();
 
   const [suggestions, setSuggestions] = useState([
@@ -24,10 +26,10 @@ const SuggestionsScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={[styles.headerButton, styles.inactiveTab]} onPress={() => navigation.navigate('Invitations')}>
-          <Text style={styles.headerText}>Invitations</Text>
+          <Text style={styles.headerText}>{language === 'fr' ? "Invitations" : "Invitations"}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.headerButton, styles.activeTab]} onPress={() => navigation.navigate('Suggestions')}>
-          <Text style={styles.headerText}>Suggestions</Text>
+          <Text style={styles.headerText}>{language === 'fr' ? "Suggestions" : "Suggestions"}</Text>
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.suggestionsList}>
@@ -36,10 +38,10 @@ const SuggestionsScreen = () => {
             <Image source={suggestion.avatar} style={styles.avatar} />
             <View style={styles.suggestionDetails}>
               <Text style={styles.suggestionName}>{suggestion.name}</Text>
-              <Text style={styles.mutualFriends}>{suggestion.mutualFriends} ami(e)s en commun</Text>
+              <Text style={styles.mutualFriends}>{suggestion.mutualFriends} {language === 'fr' ? "ami(e)s en commun" : "mutual friends"}</Text>
             </View>
             <TouchableOpacity onPress={() => handleAddFriend(suggestion.id)} style={styles.addButton}>
-              <Text style={styles.buttonText}>Ajouter</Text>
+              <Text style={styles.buttonText}>{language === 'fr' ? "Ajouter" : "Add"}</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -47,20 +49,20 @@ const SuggestionsScreen = () => {
       <View style={styles.menu}>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Friends')}>
           <View style={styles.iconContainer}>
-            <Icon name="users" size={20} color="#6200EE" />
-            <Text style={[styles.menuText, { color: '#6200EE' }]}>Amis</Text>
+            <Icon name="users" size={25} color="#6200EE" />
+            <Text style={[styles.menuText, { color: '#6200EE' }]}>{language === 'fr' ? "Amis" : "Friends"}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
           <View style={styles.iconContainer}>
-            <Icon name="map" size={25} color="#808080" />
-            <Text style={[styles.menuText, { color: '#808080' }]}>Carte</Text>
+            <Icon name="map" size={20} color="#808080" />
+            <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Carte" : "Map"}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
           <View style={styles.iconContainer}>
             <Icon name="cog" size={20} color="#808080" />
-            <Text style={[styles.menuText, { color: '#808080' }]}>Para.</Text>
+            <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Para." : "Settings"}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -180,3 +182,4 @@ const styles = StyleSheet.create({
 });
 
 export default SuggestionsScreen;
+
