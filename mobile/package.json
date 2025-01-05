@@ -2,9 +2,11 @@
   "name": "theeventapp",
   "license": "0BSD",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "view/index.js",
+  "type": "module",
   "scripts": {
     "start": "expo start",
+    "test": "node ./main.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"
@@ -19,6 +21,7 @@
     "@react-navigation/bottom-tabs": "^7.0.14",
     "@react-navigation/native": "^7.0.4",
     "@react-navigation/stack": "^7.0.7",
+    "axios": "^1.7.9",
     "crypto": "^1.0.1",
     "expo": "~52.0.9",
     "expo-image-picker": "~16.0.3",

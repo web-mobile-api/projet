@@ -7,10 +7,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import * as Location from 'expo-location';
 import { LanguageContext } from './LanguageContext';
-
-const initialEvents = [
-  // Initial events
-];
+import { EventController } from '../controller/eventController';
 
 function getCurrentDate() {
   const today = new Date();
@@ -25,7 +22,7 @@ const HomeScreen = ({ route }) => {
   const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(getCurrentDate());
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [allEvents, setAllEvents] = useState(initialEvents);
+  const [allEvents, setAllEvents] = useState([]);
   const [location, setLocation] = useState(null);
   const [mapRegion, setMapRegion] = useState(null);
   const navigation = useNavigation();
@@ -53,6 +50,15 @@ const HomeScreen = ({ route }) => {
       setAllEvents([...allEvents, route.params.newEvent]);
     }
   }, [route.params]);
+
+  useEffect(async () => {
+    try {
+      const events = await EventController.getAllEvents();
+      setAllEvents(events);
+    } catch (err) {
+      console.log(err);
+    }
+  })
 
   useEffect(() => {
     const getLocation = async () => {

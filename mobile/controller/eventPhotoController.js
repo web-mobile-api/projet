@@ -1,5 +1,8 @@
+import { Connector } from "../data/connection.js";
+import { Photo } from "../model/photo.js";
+
 export class EventPhotoController {
-    constructor(token) {
-        this.token = token;
+    static getPhotosFromEvent(event_id) {
+        
     }
 }

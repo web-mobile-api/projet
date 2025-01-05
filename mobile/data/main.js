@@ -1,4 +1,4 @@
-import { Connector } from "./connection";
+import { Connector } from "./connection.js";
 
 export const getAccountById = async (id) => {
     Connector.axios.get("http://localhost:3000/v1/account/" + id)

@@ -111,18 +111,26 @@ export const getCommentsFrom = async (req, res)=> {
 export const addComment = async (req, res) => {
     try {
         const { content, author_id, event_id } = req.body;
-        const { comment_id } = await prisma.comment.create({
-            data: {
-                date: new Date(Date.now()).toISOString(),
-                content,
-                author_id: author_id,
-                event_id: event_id
-            },
-            select: {
-                comment_id: true
+        const account = await prisma.account.findUnique({
+            where: {
+                email: req.user.email,
             }
         });
-        res.status(201).send({comment_id});
+
+        if (account && (req.perm === Permission.Admin || account.account_id === author_id)) {
+            const { comment_id } = await prisma.comment.create({
+                data: {
+                    date: new Date(Date.now()).toISOString(),
+                    content,
+                    author_id: author_id,
+                    event_id: event_id
+                },
+                select: {
+                    comment_id: true
+                }
+            });
+            res.status(201).send({comment_id});
+        }
     } catch (err) {
         console.error(err);
         res.sendStatus(500);

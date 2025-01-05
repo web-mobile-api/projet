@@ -2,14 +2,21 @@ import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LanguageContext } from './LanguageContext';
+import { AccountController } from '../controller/accountController';
 
 const LoginScreen = ({ navigation }) => {
   const { language, setLanguage } = useContext(LanguageContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    navigation.navigate('Home');
+  const handleLogin = async () => {
+    try {
+      console.log(email, password);
+      const _ = await AccountController.login(email, password);
+      navigation.navigate('Home');
+    } catch (err) {
+      console.log(err)
+    }
   };
 
   const toggleLanguage = (lang) => {

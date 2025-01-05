@@ -8,64 +8,6 @@ import { Calendar } from 'react-native-calendars';
 import * as Location from 'expo-location';
 import { LanguageContext } from './LanguageContext';
 
-const initialEvents = [
-  {
-    id: '1',
-    title: 'Concert de Jazz',
-    description: 'Un concert de jazz en plein air.',
-    startDate: { year: 2023, month: 10, day: 15 },
-    startTime: '18:00',
-    endTime: '20:00',
-    address: 'Place d\'Armes, Namur',
-    interestedCount: 50,
-    organisateur: 'Jazz Namur',
-    publicInfo: 'Entrée gratuite',
-    image: 'https://via.placeholder.com/300',
-    coordinate: { latitude: 50.4667, longitude: 4.8667 },
-  },
-  {
-    id: '2',
-    title: 'Marché de Noël',
-    description: 'Un marché de Noël avec des stands de nourriture et des cadeaux.',
-    startDate: { year: 2023, month: 12, day: 20 },
-    startTime: '10:00',
-    endTime: '22:00',
-    address: 'Place d\'Armes, Namur',
-    interestedCount: 100,
-    organisateur: 'Ville de Namur',
-    publicInfo: 'Entrée libre',
-    image: 'https://via.placeholder.com/300',
-    coordinate: { latitude: 50.4667, longitude: 4.8667 },
-  },
-  {
-    id: '3',
-    title: 'Exposition d\'Art',
-    description: 'Une exposition d\'art contemporain.',
-    startDate: { year: 2023, month: 11, day: 5 },
-    startTime: '14:00',
-    endTime: '18:00',
-    address: 'Place d\'Armes, Namur',
-    interestedCount: 30,
-    organisateur: 'Galerie d\'Art Namur',
-    publicInfo: 'Entrée payante',
-    image: 'https://via.placeholder.com/300',
-    coordinate: { latitude: 50.4667, longitude: 4.8667 },
-  },
-  {
-    id: '4',
-    title: 'Festival de la Bière',
-    description: 'Un festival célébrant les bières locales.',
-    startDate: { year: 2023, month: 9, day: 25 },
-    startTime: '16:00',
-    endTime: '23:00',
-    address: 'Place d\'Armes, Namur',
-    interestedCount: 200,
-    organisateur: 'Brasserie Namur',
-    publicInfo: 'Entrée gratuite',
-    image: 'https://via.placeholder.com/300',
-    coordinate: { latitude: 50.4667, longitude: 4.8667 },
-  },
-];
 
 function getCurrentDate() {
   const today = new Date();

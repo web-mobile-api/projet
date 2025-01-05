@@ -13,27 +13,17 @@
  * @returns {Account}
 */
 export class Account {
-    constructor(id, first_name, last_name, email, phone_number, birth_date, profile_picture, online, last_online) {
+    constructor(first_name, last_name, email, phone_number, profile_picture, birthdate, password=undefined, online=undefined, last_online=undefined, id=undefined) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
         this.phone_number = phone_number;
-        this.birth_date = birth_date;
+        this.birthdate = birthdate;
         this.profile_picture = profile_picture;
         this.online = online;
         this.last_online = last_online;
-    }
-
-    constructor(first_name, last_name, email, phone_number, birth_date, profile_picture, online, last_online) {
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.email = email;
-        this.phone_number = phone_number;
-        this.birth_date = birth_date;
-        this.profile_picture = profile_picture;
-        this.online = online;
-        this.last_online = last_online;
+        this.password = password
     }
 
     get fullName() {

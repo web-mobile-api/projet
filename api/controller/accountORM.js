@@ -121,6 +121,7 @@ export const getMultipleAccounts = async (req, res) => {
  */
 export const addAccount = async (req, res) => {
     try {
+        console.log("Req.Body: ", req.body);
         const { first_name, last_name, password, email, phone_number, birthdate, profile_picture } = req.body;
 
         const { account_id } = await prisma.account.create({
@@ -128,7 +129,7 @@ export const addAccount = async (req, res) => {
                 first_name,
                 last_name,
                 password: bcryptjs.hashSync(password, salt),
-                email: email,
+                email,
                 phone_number,
                 birthdate: (new Date(birthdate)).toISOString(),
                 profile_picture: profile_picture === undefined ? 1 : profile_picture,
@@ -372,7 +373,7 @@ export const login = async (req, res) => {
                 "fr": "Connexion réussie!"
             },
             token: token,
-            user //this wasn't in the original code
+            user: user //this wasn't in the original code
         });
     } catch (error) {
         console.error(error);

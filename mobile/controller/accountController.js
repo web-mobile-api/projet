@@ -1,77 +1,81 @@
-import Account from '../model/account.js'
+import { Account } from '../model/account.js'
 import { Connector } from '../data/connection.js';
 
 export class AccountController {
-    static config = undefined;
-    /**
-     * This is to be used if the token is saved in the local storage and you don't need it to login
-     * @param {string} token
-     */
-
-    static login(email, password)  {
-        Connector.axios.post("http://localhost:3000/v1/account/login", {
+    static async login(email, password)  {
+        return Connector.axios.post("account/login", {
             email,
             password
         })
         .then((response) => {
-            this.config = {
+            Connector.config = {
                 headers: {
                     Authorization: `Bearer ${response.data.token}`
                 }
             }
-            return Account(response.data.user.id, response.data.user.first_name, response.data.user.last_name, response.data.user.email, response.data.user.phone_number, response.data.user.birth_date)
+            let account = new Account(
+                response.data.user.first_name,
+                response.data.user.last_name,
+                response.data.user.email,
+                response.data.user.phone_number,
+                response.data.user.profile_picture,
+                response.data.user.birthdate,
+                response.data.user.online,
+                response.data.user.last_online,
+                response.data.user.account_id
+            );
+            return account
         })
         .catch((error) => {
-            if (Connector.axios.isCancel(error)) {
-                console.log('Request canceled', error.message);
-                throw error
-            } else {
-                throw error
-            }
+            throw error
         })
     }
 
-    heartbeat() {
-        Connector.axios.get("http://localhost:3000/v1/account/heartbeat", this.config);
+    static async heartbeat() {
+        return Connector.axios.get("account/heartbeat", Connector.config);
     }
 
-    getAccountById(id) {
-        Connector.axios.get("http://localhost:3000/v1/account/" + id, this.config)
+    static async getAccountById(id) {
+        return Connector.axios.get("/account/id/" + id, Connector.config)
         .then((response) => {
-            return new Account(response.data.id, response.data.first_name, response.data.last_name, response.data.email, response.data.phone_number, response.data.birth_date)
+            return new Account(
+                response.data.first_name,
+                response.data.last_name,
+                response.data.email,
+                response.data.phone_number,
+                response.data.profile_picture,
+                response.data.birthdate,
+                response.data.online,
+                response.data.last_online,
+                response.data.account_id
+            );
         })
         .catch((error) => {
-            if (Connector.axios.isCancel(error)) {
-                throw error
-            } else {
-                throw error
-            }
+            throw error
         })
     }
 
-    addAccount(account) {
-        Connector.axios.post("http://localhost:3000/v1/account/", {
+    static async addAccount(account) {
+        console.log(account)
+        return Connector.axios.post("/account/", {
             first_name: account.first_name,
             last_name: account.last_name,
             password: account.password,
             email: account.email,
             phone_number: account.phone_number,
-            birthdate: account.birthdate
+            birthdate: account.birthdate,
+            profile_picture: account.profile_picture,
         })
         .then((response) => {
             account.id = response.data.id;
             return account;
         })
         .catch((error) => {
-            if (Connector.axios.isCancel(error)) {
-                throw error
-            } else {
-                throw error
-            }
+            throw error
         })
     }
 
-    addAccountWithPFP(account, profile_picture) {
+    static async addAccountWithPFP(account) {
         //profile_picture is a File object
         let formData = new FormData();
         formData.append('first_name', account.first_name);
@@ -80,56 +84,54 @@ export class AccountController {
         formData.append('email', account.email);
         formData.append('phone_number', account.phone_number);
         formData.append('birthdate', account.birthdate);
-        formData.append('profile_picture', profile_picture);
-        Connector.axios.post("http://localhost:3000/v1/account/withPFP", formData, {
+        formData.append('profile_picture', account.profile_picture);
+        return Connector.axios.post("account/withPFP", formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         })
         .then((response) => {
-            account.id = response.data.id;
+            account.id = response.data.account_id;
             return account;
         })
         .catch((error) => {
-            if (Connector.axios.isCancel(error)) {
-                throw error
-            } else {
-                throw error
-            }
+            throw error
         })
 
     }
 
-    getMultipleAccountsById(ids) {
-        Connector.axios.get("http://localhost:3000/v1/account/ids?accountIDs=" + ids.join(","), this.config)
+    static async getMultipleAccountsById(ids) {
+        return Connector.axios.get("account/ids?accountIDs=" + ids.join(","), Connector.config)
         .then((response) => {
-            return response.data.map(account => new Account(account.id, account.first_name, account.last_name, account.email, account.phone_number, account.birth_date))
+            return response.data.map(account => new Account(
+                account.first_name,
+                account.last_name,
+                account.email,
+                account.phone_number,
+                account.profile_picture,
+                account.birthdate,
+                account.online,
+                account.last_online,
+                account.account_id
+            ));
         })
         .catch((error) => {
-            if (Connector.axios.isCancel(error)) {
-                throw error
-            } else {
-                throw error
-            }
+            throw error
         })
     }
 
-    deleteAccount(id) {
-        Connector.axios.delete("http://localhost:3000/v1/account/" + id, this.config)
+    static async deleteAccount(id) {
+        return Connector.axios.delete("/account/" + id, Connector.config)
         .then((response) => {
             return response.data;
         })
         .catch((error) => {
-            if (Connector.axios.isCancel(error)) {
-                throw error
-            } else {
-                throw error
-            }
+            throw error
         })
     }
 
-    updateAccount(account) {
-        Connector.axios.patch("http://localhost:3000/v1/account/", {
+    static async updateAccount(account) {
+        return Connector.axios.patch("/account/", {
             first_name: account.first_name,
             last_name: account.last_name,
             password: account.password,
@@ -137,16 +139,12 @@ export class AccountController {
             phone_number: account.phone_number,
             birthdate: account.birthdate,
             profile_picture: account.profile_picture
-        }, this.config)
+        }, Connector.config)
         .then((response) => {
             return new Account(response.data.id, response.data.first_name, response.data.last_name, response.data.email, response.data.phone_number, response.data.birth_date)
         })
         .catch((error) => {
-            if (Connector.axios.isCancel(error)) {
-                console.log('Request canceled', error.message);
-            } else {
-                console.log(error)
-            }
+            throw error
         })
     }
 }
