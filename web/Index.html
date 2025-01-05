@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-Event</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="logo.png" width="120" height="100" alt="T-Event Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link custom-button" href="index.html">
+                        <i class="fas fa-home"></i> Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link custom-button" href="#" id="logoutButton">
+                        <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Chercher un utilisateur</h5>
+                        <input type="text" class="form-control mb-2" placeholder="Nom" aria-label="Nom">
+                        <button class="btn btn-primary">Chercher</button>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Chercher un événement</h5>
+                        <input type="text" class="form-control mb-2" placeholder="Nom de l'événement" aria-label="Nom de l'événement">
+                        <div class="mb-2">
+                            <label class="mr-2">Ville</label>
+                            <input type="text" class="form-control" placeholder="Ville" aria-label="Ville">
+                        </div>
+                        <div class="mb-2">
+                            <label class="mr-2">Date</label>
+                            <input type="date" class="form-control" aria-label="Date">
+                        </div>
+                        <button class="btn btn-primary">Chercher</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Approuver les événements</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="event1">
+                            <label class="form-check-label" for="event1">
+                                <a href="event_details.html?id=1">Soirée Étudiante à Paris - 01/01/2025</a>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="event2">
+                            <label class="form-check-label" for="event2">
+                                <a href="event_details.html?id=2">Concert Rock à Lyon - 02/01/2025</a>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="event3">
+                            <label class="form-check-label" for="event3">
+                                <a href="event_details.html?id=3">Soirée DJ à Marseille - 03/01/2025</a>
+                            </label>
+                        </div>
+                        <button class="btn btn-success mt-2" id="approveButton">Approuver</button>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Événements</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item"><a href="event_details.html?id=4">Festival de Musique à Bordeaux - 04/01/2025</a></li>
+                            <li class="list-group-item"><a href="event_details.html?id=5">Soirée Thématique à Toulouse - 05/01/2025</a></li>
+                            <li class="list-group-item"><a href="event_details.html?id=6">Concert Jazz à Nantes - 06/01/2025</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
+
+

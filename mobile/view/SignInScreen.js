@@ -1,11 +1,13 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ActionSheetIOS } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import ActionSheet from 'react-native-actionsheet';
 import { Ionicons } from '@expo/vector-icons';
 import { LanguageContext } from './LanguageContext';
 import { AccountController } from '../controller/accountController';
 import { Account } from '../model/account';
+import axios from 'axios';
+import { Connector } from '../data/connection';
 
 const SignInScreen = ({ navigation }) => {
   const { language } = useContext(LanguageContext);
@@ -31,15 +33,45 @@ const SignInScreen = ({ navigation }) => {
   }, []);
 
   const handleSignIn = async () => {
+    let errors = {};
+
+    if (!firstName) {
+      errors.firstName = language === 'fr' ? 'Le prénom est requis.' : 'First name is required.';
+    }
+    if (!lastName) {
+      errors.lastName = language === 'fr' ? 'Le nom est requis.' : 'Last name is required.';
+    }
+    if (!email) {
+      errors.email = language === 'fr' ? 'L\'email est requis.' : 'Email is required.';
+    }
+    if (!phoneNumber) {
+      errors.phoneNumber = language === 'fr' ? 'Le numéro de téléphone est requis.' : 'Phone number is required.';
+    }
+    if (!birthdate) {
+      errors.birthdate = language === 'fr' ? 'La date de naissance est requise.' : 'Birthdate is required.';
+    }
+    if (!password) {
+      errors.password = language === 'fr' ? 'Le mot de passe est requis.' : 'Password is required.';
+    }
+    if (!confirmPassword) {
+      errors.confirmPassword = language === 'fr' ? 'La confirmation du mot de passe est requise.' : 'Confirm password is required.';
+    }
+    if (password !== confirmPassword) {
+      errors.confirmPassword = language === 'fr' ? 'Les mots de passe ne correspondent pas.' : 'Passwords do not match.';
+    }
+    if (!profilePhoto) {
+      errors.profilePhoto = language === 'fr' ? 'Une photo de profil est requise.' : 'Profile photo is required.';
+    }
+
+    setErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
     try {
       let account = new Account(firstName, lastName, email, phoneNumber, profilePhoto, birthdate, password);
-      console.log(`Before: ${account}`);
-      if (profilePhoto != null){
-        await AccountController.addAccountWithPFP(account);
-      } else {
-        await AccountController.addAccount(account);
-      }
-      console.log(`After: ${account}`)
+      await AccountController.addAccountWithPFP(account);
       Alert.alert(language === 'fr' ? 'Inscription réussie!' : 'Registration successful!');
       navigation.navigate('Login');
     } catch (err) {
@@ -65,8 +97,8 @@ const SignInScreen = ({ navigation }) => {
       });
     }
 
-    if (!result.cancelled) {
-      setProfilePhoto(result.uri);
+    if (!result.canceled) {
+      setProfilePhoto(result.assets[0].uri);
     }
   };
 
@@ -75,7 +107,7 @@ const SignInScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Image source={require('./assets/logo.png')} style={styles.logo} />
       <View style={styles.inputContainer}>
         <Ionicons name="person" size={24} color="#6200EE" style={styles.icon} />
@@ -154,6 +186,7 @@ const SignInScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={showImagePickerOptions}>
         <Text style={styles.buttonText}>{language === 'fr' ? 'Choisir une photo de profil' : 'Choose a profile photo'}</Text>
       </TouchableOpacity>
+      {errors.profilePhoto && <Text style={styles.errorText}>{errors.profilePhoto}</Text>}
       {profilePhoto && <Image source={{ uri: profilePhoto }} style={styles.profilePhoto} />}
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>{language === 'fr' ? 'Créer mon compte' : 'Create my account'}</Text>
@@ -171,13 +204,13 @@ const SignInScreen = ({ navigation }) => {
           }
         }}
       />
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',

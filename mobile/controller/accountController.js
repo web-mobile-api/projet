@@ -76,7 +76,6 @@ export class AccountController {
     }
 
     static async addAccountWithPFP(account) {
-        //profile_picture is a File object
         let formData = new FormData();
         formData.append('first_name', account.first_name);
         formData.append('last_name', account.last_name);
@@ -84,7 +83,12 @@ export class AccountController {
         formData.append('email', account.email);
         formData.append('phone_number', account.phone_number);
         formData.append('birthdate', account.birthdate);
-        formData.append('profile_picture', account.profile_picture);
+        formData.append('photo', {
+            uri: account.profile_picture,
+            type: 'image/jpeg',
+            name: 'profile_picture.jpg'
+        });
+
         return Connector.axios.post("account/withPFP", formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -95,9 +99,8 @@ export class AccountController {
             return account;
         })
         .catch((error) => {
-            throw error
-        })
-
+            throw error;
+        });
     }
 
     static async getMultipleAccountsById(ids) {

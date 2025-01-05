@@ -17,7 +17,7 @@ function getCurrentDate() {
   return { day, month, year };
 }
 
-const HomeScreen = ({ route }) => {
+const HomeScreen = async ({ route }) => {
   const { language } = useContext(LanguageContext);
   const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(getCurrentDate());
@@ -28,11 +28,25 @@ const HomeScreen = ({ route }) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
+  const handleEvents = async () => {
+    const fetchEvents = () => {
+      EventController.getAllEvents().then((events) => {;
+      setAllEvents(events);
+      })
+      .catch((error) => {
+        setError('Failed to fetch events. Please try again later.');
+      });
+    };
+
+    fetchEvents();
+  }
+
   useEffect(() => {
     if (isFocused) {
       applyFilters(selectedDate);
     }
   }, [isFocused]);
+
 
   useEffect(() => {
     if (route.params?.selectedDate) {
@@ -50,15 +64,6 @@ const HomeScreen = ({ route }) => {
       setAllEvents([...allEvents, route.params.newEvent]);
     }
   }, [route.params]);
-
-  useEffect(async () => {
-    try {
-      const events = await EventController.getAllEvents();
-      setAllEvents(events);
-    } catch (err) {
-      console.log(err);
-    }
-  })
 
   useEffect(() => {
     const getLocation = async () => {
@@ -90,7 +95,7 @@ const HomeScreen = ({ route }) => {
   const applyFilters = (filters = selectedDate) => {
     const filtered = allEvents.filter(event => {
       const eventDate = new Date(
-        `${event.startDate.year}-${event.startDate.month}-${event.startDate.day}`
+        `${event.date.year}-${event.date.month}-${event.date.day}`
       );
       const filterDate = new Date(
         `${filters.year}-${filters.month}-${filters.day}`
@@ -150,7 +155,7 @@ const HomeScreen = ({ route }) => {
         <TouchableOpacity onPress={handleLogoPress}>
           <Image source={require('./assets/logo.png')} style={styles.logo} />
         </TouchableOpacity>
-        <View style={styles.mapContainer}>
+        <View style={styles.mapContainer} onfocus={handleEvents}>
           {mapRegion ? (
             <MapView style={styles.map} region={mapRegion}>
               {location && <Marker coordinate={location.coords} title={language === 'fr' ? "Votre position" : "Your location"} pinColor="blue" />}

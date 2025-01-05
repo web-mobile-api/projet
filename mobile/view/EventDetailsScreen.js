@@ -1,281 +1,261 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, Button, ScrollView, Alert } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { Calendar } from 'react-native-calendars';
-import * as Location from 'expo-location';
+import { useNavigation } from '@react-navigation/native';
 import { LanguageContext } from './LanguageContext';
 
-
-function getCurrentDate() {
-  const today = new Date();
-  const day = String(today.getDate()).padStart(2, '0');
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-  const year = today.getFullYear();
-  return { day, month, year };
-}
-
-const HomeScreen = ({ route }) => {
+const EventDetailsScreen = ({ route }) => {
   const { language } = useContext(LanguageContext);
-  const [isFilterModalVisible, setFilterModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(getCurrentDate());
-  const [filteredEvents, setFilteredEvents] = useState([]);
-  const [allEvents, setAllEvents] = useState(initialEvents);
-  const [location, setLocation] = useState(null);
-  const [mapRegion, setMapRegion] = useState(null);
+  const { event, selectedDate } = route.params;
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
 
-  useEffect(() => {
-    if (isFocused) {
-      applyFilters(selectedDate);
+  // Convertir la date en une chaîne de caractères lisible
+  const formatDate = (date) => {
+    const monthNames = language === 'fr' ? [
+      'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
+    ] : [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const monthName = monthNames[parseInt(date.month) - 1];
+    return `${date.day} ${monthName} ${date.year}`;
+  };
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      const newCommentObj = {
+        id: Date.now().toString(),
+        content: newComment,
+        author: 'User Name', // Remplacez par le nom de l'utilisateur actuel
+        profilePicture: 'https://via.placeholder.com/150', // Remplacez par l'URL de la photo de profil de l'utilisateur
+        date: new Date().toLocaleString(),
+      };
+      setComments([...comments, newCommentObj]);
+      setNewComment('');
     }
-  }, [isFocused]);
-
-  useEffect(() => {
-    if (route.params?.selectedDate) {
-      setSelectedDate(route.params.selectedDate);
-      applyFilters(route.params.selectedDate);
-    }
-  }, [route.params]);
-
-  useEffect(() => {
-    applyFilters(selectedDate);
-  }, []);
-
-  useEffect(() => {
-    if (route.params?.newEvent) {
-      setAllEvents([...allEvents, route.params.newEvent]);
-    }
-  }, [route.params]);
-
-  useEffect(() => {
-    const getLocation = async () => {
-      let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
-      if (locationStatus !== 'granted') {
-        Alert.alert(
-          language === 'fr' ? 'Permission refusée' : 'Permission Denied',
-          language === 'fr' ? 'Désolé, nous avons besoin de l\'autorisation de localisation pour suggérer des adresses.' : 'Sorry, we need location permission to suggest addresses.'
-        );
-        return;
-      }
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation(currentLocation);
-      setMapRegion({
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-        latitudeDelta: 0.015,
-        longitudeDelta: 0.0121,
-      });
-    };
-
-    getLocation();
-  }, [language]);
-
-  const toggleFilterModal = () => {
-    setFilterModalVisible(!isFilterModalVisible);
   };
 
-  const applyFilters = (filters = selectedDate) => {
-    const filtered = allEvents.filter(event => {
-      const eventDate = new Date(
-        `${event.startDate.year}-${event.startDate.month}-${event.startDate.day}`
-      );
-      const filterDate = new Date(
-        `${filters.year}-${filters.month}-${filters.day}`
-      );
-
-      return eventDate.getTime() === filterDate.getTime();
-    });
-
-    setFilteredEvents(filtered);
-    setFilterModalVisible(false);
-  };
-
-  const handleMarkerPress = (event) => {
-    navigation.navigate('EventDetails', { event, selectedDate });
-  };
-
-  const handleDayPress = (selectedDay) => {
-    const { dateString } = selectedDay;
-    const [year, month, day] = dateString.split('-');
-    setSelectedDate({ day, month, year });
-  };
-
-  const handleCreateEventPress = () => {
-    navigation.navigate('CreateEvent');
-  };
-
-  const handleLogoPress = () => {
-    navigation.navigate('Friends');
-  };
-
-  const getMinDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  const handleReportComment = (commentId) => {
+    Alert.alert(
+      language === 'fr' ? "Signaler un commentaire" : "Report Comment",
+      language === 'fr' ? "Voulez-vous vraiment signaler ce commentaire ?" : "Do you really want to report this comment?",
+      [
+        {
+          text: language === 'fr' ? "Annuler" : "Cancel",
+          style: "cancel"
+        },
+        { text: language === 'fr' ? "Signaler" : "Report", onPress: () => {
+          // Logique de signalement du commentaire
+          console.log(`Comment ${commentId} reported`);
+        }}
+      ]
+    );
   };
 
   return (
-    <PaperProvider>
-      <View style={styles.container}>
-        <TouchableOpacity onPress={handleLogoPress}>
-          <Image source={require('./assets/logo.png')} style={styles.logo} />
-        </TouchableOpacity>
-        <View style={styles.mapContainer}>
-          {mapRegion ? (
-            <MapView style={styles.map} region={mapRegion}>
-              {location && <Marker coordinate={location.coords} title={language === 'fr' ? "Votre position" : "Your location"} pinColor="blue" />}
-              {filteredEvents.map(event => (
-                <Marker
-                  key={event.id}
-                  coordinate={event.coordinate}
-                  title={event.title}
-                  description={event.description}
-                  pinColor="red"
-                  onPress={() => handleMarkerPress(event)}
-                />
-              ))}
-            </MapView>
-          ) : (
-            <MapView style={styles.map} />
-          )}
-          <TouchableOpacity style={styles.filterButton} onPress={toggleFilterModal}>
-            <Icon name="filter" size={25} color="#6200EE" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.createEventButton} onPress={handleCreateEventPress}>
-            <Icon name="plus" size={25} color="#6200EE" />
-          </TouchableOpacity>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Image source={{ uri: event.image }} style={styles.eventImage} />
+        <View style={styles.eventDetails}>
+          <Text style={styles.eventTitle}>{event.title}</Text>
+          <Text style={styles.eventDate}>{formatDate(event.startDate)} , {event.startTime}</Text>
+          <Text style={styles.eventLocation}>{event.address}</Text>
+          <Text style={styles.eventTime}>{language === 'fr' ? "Heure: " : "Time: "} {event.startTime} - {event.endTime}</Text>
         </View>
-        <View style={styles.menu}>
-          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Friends')}>
-            <View style={styles.iconContainer}>
-              <Icon name="users" size={20} color="#808080" />
-              <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Amis" : "Friends"}</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
-            <View style={styles.iconContainer}>
-              <Icon name="map" size={25} color="#6200EE" />
-              <Text style={[styles.menuText, { color: '#6200EE' }]}>{language === 'fr' ? "Carte" : "Map"}</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
-            <View style={styles.iconContainer}>
-              <Icon name="cog" size={20} color="#808080" />
-              <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Para." : "Settings"}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isFilterModalVisible}
-          onRequestClose={toggleFilterModal}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <TouchableOpacity style={styles.closeButton} onPress={toggleFilterModal}>
-                <Icon name="times" size={20} color="#6200EE" />
-              </TouchableOpacity>
-              <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                <Text style={styles.modalTitle}>{language === 'fr' ? "Filtrer les événements" : "Filter Events"}</Text>
-                <Calendar
-                  onDayPress={handleDayPress}
-                  markedDates={{
-                    [`${selectedDate.year}-${selectedDate.month}-${selectedDate.day}`]: { selected: true, selectedColor: '#6200EE' },
-                  }}
-                  minDate={getMinDate()}
-                  theme={{
-                    backgroundColor: '#ffffff',
-                    calendarBackground: '#ffffff',
-                    textSectionTitleColor: '#6200EE',
-                    selectedDayBackgroundColor: '#6200EE',
-                    selectedDayTextColor: '#ffffff',
-                    todayTextColor: '#6200EE',
-                    dayTextColor: '#6200EE',
-                    textDisabledColor: '#d9e1e8',
-                    dotColor: '#6200EE',
-                    selectedDotColor: '#ffffff',
-                    arrowColor: '#6200EE',
-                    monthTextColor: '#6200EE',
-                    textDayFontFamily: 'monospace',
-                    textMonthFontFamily: 'monospace',
-                    textDayHeaderFontFamily: 'monospace',
-                    textDayFontWeight: '300',
-                    textMonthFontWeight: 'bold',
-                    textDayHeaderFontWeight: '300',
-                    textDayFontSize: 16,
-                    textMonthFontSize: 16,
-                    textDayHeaderFontSize: 16
-                  }}
-                />
-                <Button title={language === 'fr' ? "Appliquer les filtres" : "Apply Filters"} onPress={() => applyFilters(selectedDate)} color="#6200EE" />
-              </ScrollView>
-            </View>
+        <View style={styles.detailsSection}>
+          <Text style={styles.sectionTitle}>{language === 'fr' ? "Détails" : "Details"}</Text>
+          <View style={styles.detailItem}>
+            <Icon name="users" size={20} color="#6200EE" />
+            <Text style={styles.detailText}>{event.interestedCount} {language === 'fr' ? "personnes ont répondu" : "people responded"}</Text>
           </View>
-        </Modal>
+          <View style={styles.detailItem}>
+            <Icon name="university" size={20} color="#6200EE" />
+            <Text style={styles.detailText}>{language === 'fr' ? "Organisateur: " : "Organizer: "} {event.organisateur}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Icon name="map-marker" size={20} color="#6200EE" />
+            <Text style={styles.detailText}>{event.address}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Icon name="globe" size={20} color="#6200EE" />
+            <Text style={styles.detailText}>{event.publicInfo}</Text>
+          </View>
+        </View>
+        <View style={styles.actionButtons}>
+          <TouchableOpacity style={styles.actionButton}>
+            <Icon name="user" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>{language === 'fr' ? "Intéressé" : "Interested"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <Icon name="check" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>{language === 'fr' ? "Participe" : "Participate"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <Icon name="share" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>{language === 'fr' ? "Partager" : "Share"}</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.commentsSection}>
+          <Text style={styles.sectionTitle}>{language === 'fr' ? "Commentaires" : "Comments"}</Text>
+          {comments.map(comment => (
+            <View key={comment.id} style={styles.comment}>
+              <Image source={{ uri: comment.profilePicture }} style={styles.profilePicture} />
+              <View style={styles.commentContent}>
+                <Text style={styles.commentAuthor}>{comment.author}</Text>
+                <Text style={styles.commentDate}>{comment.date}</Text>
+                <Text style={styles.commentText}>{comment.content}</Text>
+              </View>
+              <TouchableOpacity onPress={() => handleReportComment(comment.id)}>
+                <Icon name="flag" size={20} color="#FF0000" />
+              </TouchableOpacity>
+            </View>
+          ))}
+          <View style={styles.newCommentSection}>
+            <TextInput
+              style={styles.newCommentInput}
+              placeholder={language === 'fr' ? "Écrire un commentaire..." : "Write a comment..."}
+              value={newComment}
+              onChangeText={setNewComment}
+            />
+            <TouchableOpacity style={styles.addCommentButton} onPress={handleAddComment}>
+              <Icon name="send" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+      <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.menuItem}>
+          <View style={styles.iconContainer}>
+            <Icon name="users" size={20} color="#808080" />
+            <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Amis" : "Friends"}</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
+          <View style={styles.iconContainer}>
+            <Icon name="map" size={25} color="#6200EE" />
+            <Text style={[styles.menuText, { color: '#6200EE' }]}>{language === 'fr' ? "Carte" : "Map"}</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <View style={styles.iconContainer}>
+            <Icon name="cog" size={20} color="#808080" />
+            <Text style={[styles.menuText, { color: '#808080' }]}>{language === 'fr' ? "Para." : "Settings"}</Text>
+          </View>
+        </TouchableOpacity>
       </View>
-    </PaperProvider>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  scrollContainer: {
+    paddingBottom: 60,
+  },
+  eventImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  eventDetails: {
+    padding: 20,
     backgroundColor: '#fff',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 20,
   },
-  logo: {
-    width: 100,
-    height: 50,
-    resizeMode: 'contain',
-    marginTop: 10,
-    alignSelf: 'center',
+  eventTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
   },
-  mapContainer: {
-    flex: 0.9,
-    marginHorizontal: '5%',
-    marginVertical: '5%',
+  eventDate: {
+    fontSize: 16,
+    color: '#666',
+    marginVertical: 5,
+  },
+  eventLocation: {
+    fontSize: 16,
+    color: '#666',
+  },
+  eventTime: {
+    fontSize: 16,
+    color: '#666',
+    marginVertical: 5,
+  },
+  detailsSection: {
+    padding: 20,
+    backgroundColor: '#fff',
     borderRadius: 20,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-    borderWidth: 2,
-    borderColor: '#6200EE',
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  filterButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    padding: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 20,
   },
-  createEventButton: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  detailText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: '#333',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 20,
     backgroundColor: '#fff',
-    borderRadius: 50,
-    padding: 10,
+    borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 20,
   },
-  menu: {
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#6200EE',
+    padding: 10,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  actionButtonText: {
+    marginLeft: 10,
+    color: '#fff',
+    fontSize: 16,
+  },
+  bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -285,7 +265,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
     borderTopWidth: 1,
-    borderTopColor: '#fff',
+    borderTopColor: '#ddd',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
   },
   menuItem: {
     alignItems: 'center',
@@ -297,60 +282,61 @@ const styles = StyleSheet.create({
   menuText: {
     marginTop: 5,
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
+  commentsSection: {
+    padding: 20,
     backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 10,
-    width: '80%',
-    maxHeight: '80%',
-    position: 'relative',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 20,
   },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
+  comment: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
   },
-  scrollViewContent: {
-    padding: 10,
+  profilePicture: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
-  modalTitle: {
-    fontSize: 16,
+  commentContent: {
+    flex: 1,
+  },
+  commentAuthor: {
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#6200EE',
+    color: '#333',
   },
-  label: {
-    fontSize: 14,
-    marginBottom: 5,
-    color: '#6200EE',
+  commentDate: {
+    fontSize: 12,
+    color: '#666',
   },
-  picker: {
-    color: '#6200EE',
-    fontSize: 14,
-    padding: 10,
+  commentText: {
+    marginTop: 5,
+    color: '#333',
+  },
+  newCommentSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  newCommentInput: {
+    flex: 1,
     borderWidth: 1,
-    borderColor: '#6200EE',
-    borderRadius: 5,
-    marginBottom: 10,
+    borderColor: '#ddd',
+    borderRadius: 20,
+    padding: 10,
+    marginRight: 10,
   },
-  toggleButton: {
+  addCommentButton: {
     backgroundColor: '#6200EE',
-    padding: 8,
-    borderRadius: 5,
-    marginVertical: 5,
-  },
-  toggleButtonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 14,
+    padding: 10,
+    borderRadius: 20,
   },
 });
 
-export default HomeScreen;
+export default EventDetailsScreen;

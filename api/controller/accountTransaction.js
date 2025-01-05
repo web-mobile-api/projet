@@ -40,10 +40,11 @@ const salt = bcryptjs.genSaltSync();
 export const addAccountWithpfp = async (req, res) => {
     try {
         const { first_name, last_name, password, email, phone_number, birthdate } = req.body;
-        console.log(`èmail: "${email}"`);
+        console.log(`email: "${email}"`);
 
         const newAccount = await prisma.$transaction(async (prisma) => {
             const { filename, path: _filePath } = req.file;
+            console.log(req.file);
     
             const photo = await prisma.photo.create({
                 data: {

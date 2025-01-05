@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Événement - T-Event</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="logo.png" width="120" height="100" alt="T-Event Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link custom-button" href="index.html">
+                        <i class="fas fa-home"></i> Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link custom-button" href="#" id="logoutButton">
+                        <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row" id="event-details">
+            <!-- Les détails de l'événement seront injectés ici par JavaScript -->
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get('id');
+
+            const events = {
+                1: {
+                    title: 'Soirée Étudiante à Paris - 01/01/2025',
+                    description: 'Venez vous amuser et rencontrer de nouvelles personnes lors de notre soirée étudiante ! Musique, jeux et boissons vous attendent pour une nuit inoubliable.',
+                    participants: ['Jean Dupont', 'Marie Martin', 'Pierre Durand'],
+                    comments: [
+                        'Super soirée ! J\'ai passé un excellent moment. - Jean Dupont',
+                        'La musique était géniale et l\'ambiance était top. - Marie Martin',
+                        'J\'ai rencontré plein de nouvelles personnes, c\'était super ! - Pierre Durand'
+                    ]
+                },
+                2: {
+                    title: 'Concert Rock à Lyon - 02/01/2025',
+                    description: 'Venez profiter d\'un concert de rock inoubliable à Lyon ! Des artistes de renommée mondiale se produiront pour vous offrir une expérience musicale unique.',
+                    participants: ['Paul Leclerc', 'Sophie Renard', 'Lucas Bernard'],
+                    comments: [
+                        'Concert incroyable ! Les artistes étaient géniaux. - Paul Leclerc',
+                        'L\'ambiance était parfaite, j\'ai adoré ! - Sophie Renard',
+                        'Une soirée inoubliable, merci ! - Lucas Bernard'
+                    ]
+                },
+                3: {
+                    title: 'Soirée DJ à Marseille - 03/01/2025',
+                    description: 'Participez à notre soirée DJ à Marseille ! Une ambiance unique et des mix spéciaux vous attendent pour une soirée mémorable.',
+                    participants: ['Clara Lefèvre', 'Marc Dubois', 'Émilie Rousseau'],
+                    comments: [
+                        'Soirée DJ géniale ! Les mix étaient parfaits. - Clara Lefèvre',
+                        'L\'ambiance était top, j\'ai passé une super soirée. - Marc Dubois',
+                        'Une soirée inoubliable, merci ! - Émilie Rousseau'
+                    ]
+                },
+                4: {
+                    title: 'Festival de Musique à Bordeaux - 04/01/2025',
+                    description: 'Venez profiter d\'un festival de musique inoubliable à Bordeaux ! Des artistes de renommée mondiale se produiront pour vous offrir une expérience musicale unique.',
+                    participants: ['Jean Dupont', 'Marie Martin', 'Pierre Durand'],
+                    comments: [
+                        'Super festival ! J\'ai passé un excellent moment. - Jean Dupont',
+                        'La musique était géniale et l\'ambiance était top. - Marie Martin',
+                        'J\'ai rencontré plein de nouvelles personnes, c\'était super ! - Pierre Durand'
+                    ]
+                },
+                5: {
+                    title: 'Soirée Thématique à Toulouse - 05/01/2025',
+                    description: 'Participez à notre soirée thématique à Toulouse ! Une ambiance unique et des activités spéciales vous attendent pour une soirée mémorable.',
+                    participants: ['Paul Leclerc', 'Sophie Renard', 'Lucas Bernard'],
+                    comments: [
+                        'Soirée incroyable ! Les activités étaient géniales. - Paul Leclerc',
+                        'L\'ambiance était parfaite, j\'ai adoré ! - Sophie Renard',
+                        'Une soirée inoubliable, merci ! - Lucas Bernard'
+                    ]
+                },
+                6: {
+                    title: 'Concert Jazz à Nantes - 06/01/2025',
+                    description: 'Ne manquez pas notre concert de jazz à Nantes ! Des musiciens talentueux vous feront vibrer au rythme du jazz.',
+                    participants: ['Clara Lefèvre', 'Marc Dubois', 'Émilie Rousseau'],
+                    comments: [
+                        'Concert magnifique ! Les musiciens étaient exceptionnels. - Clara Lefèvre',
+                        'Le jazz était parfait, j\'ai passé une soirée merveilleuse. - Marc Dubois',
+                        'Une expérience musicale incroyable, bravo ! - Émilie Rousseau'
+                    ]
+                }
+            };
+
+            const event = events[eventId];
+            if (event) {
+                const eventDetails = `
+                    <div class="col-md-8">
+                        <div class="card shadow">
+                            <img src="event_image.jpg" class="card-img-top" alt="Image de l'événement">
+                            <div class="card-body">
+                                <h5 class="card-title">${event.title}</h5>
+                                <p class="card-text">${event.description}</p>
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button class="btn btn-success" id="approveButton">Approuver</button>
+                                    <button class="btn btn-primary" id="modifyButton">Modifier</button>
+                                    <button class="btn btn-danger" id="deleteButton">Supprimer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <h5 class="card-title">Participants</h5>
+                                <ul class="list-group">
+                                    ${event.participants.map(participant => `<li class="list-group-item">${participant}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card shadow mt-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Commentaires</h5>
+                                <ul class="list-group">
+                                    ${event.comments.map(comment => `<li class="list-group-item">${comment}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('event-details').innerHTML = eventDetails;
+            }
+        });
+    </script>
+</body>
+</html>

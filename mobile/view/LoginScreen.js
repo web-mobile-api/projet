@@ -11,7 +11,6 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      console.log(email, password);
       const _ = await AccountController.login(email, password);
       navigation.navigate('Home');
     } catch (err) {

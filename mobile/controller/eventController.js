@@ -2,8 +2,8 @@ import { Connector } from "../data/connection.js";
 import { Event } from "../model/event.js";
 
 export class EventController {
-    static getAllEvents() {
-        Connector.axios.get('/event', Connector.config)
+    static async getAllEvents() {
+        return Connector.axios.get('/event', Connector.config)
             .then((response) => {
                 return response.data.map((event) => {
                     let date = new Date(event.date);
