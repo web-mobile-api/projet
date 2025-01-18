@@ -1,6 +1,7 @@
 import prisma from "../database/databaseORM.js";
 import { Permission } from "../middleware/authMiddleware.js";
 
+
 /**
  * @swagger
  * /v1/events:
@@ -115,7 +116,8 @@ export const getEvent = async (req, res)=> {
         const event_id = parseInt(req.params.id);
         const event = await prisma.event.findUnique({
             where: {
-                event_id
+                event_id,
+                is_approved: true
             },
             include: {
                 Comment: true,
@@ -181,6 +183,7 @@ export const addEvent = async (req, res) => {
                 reccurence,
                 created_at: new Date(Date.now()).toISOString(),
                 date: (new Date(date)).toISOString(),
+                is_approved: false
             },
             select: {
                 event_id: true
@@ -306,4 +309,28 @@ export const deleteEvent = async (req, res) => {
     }
 };
 
-
+export const approveEvent = async (req, res) => {
+    try {
+        const account = await prisma.account.findUnique({
+            where: {
+                email: req.user.email
+            }
+        });
+        if (account && req.perm === Permission.Admin) {
+            await prisma.event.update({
+                where: {
+                    event_id: parseInt(req.params.id)
+                },
+                data: {
+                    is_approved: true
+                }
+            });
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(403);
+        }
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+}

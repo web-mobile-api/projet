@@ -94,6 +94,8 @@ CREATE TABLE "Event" (
     name TEXT NOT NULL,
     date TIMESTAMP NOT NULL,
     reccurence TEXT,
+    -- Has to be changed by an admin
+    is_approved BOOLEAN,
     CONSTRAINT chk_reccurence_name CHECK (
         reccurence IN ('weekly', 'bi-weekly', 'daily', 'monthly', 'bi-monthly', 'yearly', 'none')
     )
@@ -122,3 +124,10 @@ CREATE TABLE "EventPhoto" (
     photo_id INTEGER REFERENCES "Photo"(photo_id) DEFERRABLE INITIALLY IMMEDIATE
 );
 
+CREATE TABLE "Report" (
+    report_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    reporter_id INTEGER REFERENCES "Account"(account_id) DEFERRABLE INITIALLY IMMEDIATE,
+    event_reported_id INTEGER REFERENCES "Event"(event_id) DEFERRABLE INITIALLY IMMEDIATE,
+    date TIMESTAMP NOT NULL,
+    reason TEXT NOT NULL
+);

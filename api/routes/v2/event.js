@@ -5,7 +5,8 @@ import {
     deleteEvent,
     getEventsFrom,
     getEvent,
-    getAllEvents
+    getAllEvents,
+    approveEvent,
 } from "../../controller/eventORM.js";
 import { authenticateAdmin, authenticateToken } from "../../middleware/authMiddleware.js";
 
@@ -54,5 +55,7 @@ router.patch("/:id", authenticateToken, authenticateAdmin, updateEvent);
 router.get("/id/:id", authenticateToken, getEvent);
 router.get("/", authenticateToken, getAllEvents);
 router.delete("/:id", authenticateToken, authenticateAdmin, deleteEvent);
+
+router.patch("/approve/:id", authenticateToken, authenticateAdmin, approveEvent);
 
 export default router;
