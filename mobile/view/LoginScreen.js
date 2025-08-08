@@ -1,20 +1,24 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LanguageContext } from './LanguageContext';
-import { AccountController } from '../controller/accountController';
+import { AuthContext } from '../contexts/AuthContext';
 
 const LoginScreen = ({ navigation }) => {
   const { language, setLanguage } = useContext(LanguageContext);
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
-      const _ = await AccountController.login(email, password);
+      await AccountController.login(email, password);
       navigation.navigate('Home');
     } catch (err) {
-      console.log(err)
+      Alert.alert(
+        language === 'fr' ? 'Erreur' : 'Error',
+        language === 'fr' ? 'Email ou mot de passe incorrect' : 'Invalid email or password'
+      );
     }
   };
 
