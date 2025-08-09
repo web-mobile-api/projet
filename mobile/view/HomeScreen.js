@@ -7,7 +7,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import * as Location from 'expo-location';
 import { LanguageContext } from './LanguageContext';
-import { EventController } from '../controller/eventController';
+import { getAllEvents } from '../services/eventListService';
 
 function getCurrentDate() {
   const today = new Date();
@@ -17,7 +17,7 @@ function getCurrentDate() {
   return { day, month, year };
 }
 
-const HomeScreen = async ({ route }) => {
+const HomeScreen = ({ route }) => {
   const { language } = useContext(LanguageContext);
   const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(getCurrentDate());
@@ -28,42 +28,35 @@ const HomeScreen = async ({ route }) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
-  const handleEvents = async () => {
-    const fetchEvents = () => {
-      EventController.getAllEvents().then((events) => {;
-      setAllEvents(events);
-      })
-      .catch((error) => {
-        setError('Failed to fetch events. Please try again later.');
-      });
-    };
 
-    fetchEvents();
-  }
+  // Fetch all events from the API
+  const fetchEvents = async () => {
+    try {
+      const events = await getAllEvents();
+      setAllEvents(events);
+      applyFilters(selectedDate, events);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to fetch events. Please try again later.');
+    }
+  };
+
 
   useEffect(() => {
     if (isFocused) {
-      applyFilters(selectedDate);
+      fetchEvents();
     }
   }, [isFocused]);
-
 
   useEffect(() => {
     if (route.params?.selectedDate) {
       setSelectedDate(route.params.selectedDate);
-      applyFilters(route.params.selectedDate);
+      applyFilters(route.params.selectedDate, allEvents);
     }
-  }, [route.params]);
+  }, [route.params, allEvents]);
 
   useEffect(() => {
-    applyFilters(selectedDate);
-  }, []);
-
-  useEffect(() => {
-    if (route.params?.newEvent) {
-      setAllEvents([...allEvents, route.params.newEvent]);
-    }
-  }, [route.params]);
+    applyFilters(selectedDate, allEvents);
+  }, [allEvents]);
 
   useEffect(() => {
     const getLocation = async () => {
@@ -92,24 +85,32 @@ const HomeScreen = async ({ route }) => {
     setFilterModalVisible(!isFilterModalVisible);
   };
 
-  const applyFilters = (filters = selectedDate) => {
-    const filtered = allEvents.filter(event => {
-      const eventDate = new Date(
-        `${event.date.year}-${event.date.month}-${event.date.day}`
-      );
-      const filterDate = new Date(
-        `${filters.year}-${filters.month}-${filters.day}`
-      );
 
-      return eventDate.getTime() === filterDate.getTime();
+  const applyFilters = (filters = selectedDate, events = allEvents) => {
+    // If event.date is a string (ISO), parse it, else use as is
+    const filtered = events.filter(event => {
+      let eventDateObj;
+      if (event.date) {
+        eventDateObj = new Date(event.date);
+      } else if (event.startDate) {
+        eventDateObj = new Date(event.startDate.year, event.startDate.month - 1, event.startDate.day);
+      } else {
+        return false;
+      }
+      const filterDate = new Date(`${filters.year}-${filters.month}-${filters.day}`);
+      return (
+        eventDateObj.getFullYear() === filterDate.getFullYear() &&
+        eventDateObj.getMonth() === filterDate.getMonth() &&
+        eventDateObj.getDate() === filterDate.getDate()
+      );
     });
-
     setFilteredEvents(filtered);
     setFilterModalVisible(false);
   };
 
+
   const handleMarkerPress = (event) => {
-    navigation.navigate('EventDetails', { event, selectedDate });
+    navigation.navigate('EventDetails', { eventId: event.event_id || event.id });
   };
 
   const handleDayPress = (selectedDay) => {
@@ -159,16 +160,26 @@ const HomeScreen = async ({ route }) => {
           {mapRegion ? (
             <MapView style={styles.map} region={mapRegion}>
               {location && <Marker coordinate={location.coords} title={language === 'fr' ? "Votre position" : "Your location"} pinColor="blue" />}
-              {filteredEvents.map(event => (
-                <Marker
-                  key={event.id}
-                  coordinate={event.coordinate}
-                  title={event.title}
-                  description={event.description}
-                  pinColor="red"
-                  onPress={() => handleMarkerPress(event)}
-                />
-              ))}
+              {filteredEvents.map(event => {
+                let coordinate = event.coordinate;
+                if (!coordinate && event.Location && event.Location.latitude && event.Location.longitude) {
+                  coordinate = {
+                    latitude: event.Location.latitude,
+                    longitude: event.Location.longitude
+                  };
+                }
+                if (!coordinate) return null;
+                return (
+                  <Marker
+                    key={event.event_id || event.id}
+                    coordinate={coordinate}
+                    title={event.name || event.title}
+                    description={event.description}
+                    pinColor="red"
+                    onPress={() => handleMarkerPress(event)}
+                  />
+                );
+              })}
             </MapView>
           ) : (
             <MapView style={styles.map} />

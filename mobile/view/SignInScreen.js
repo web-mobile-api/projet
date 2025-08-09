@@ -4,10 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import ActionSheet from 'react-native-actionsheet';
 import { Ionicons } from '@expo/vector-icons';
 import { LanguageContext } from './LanguageContext';
-import { AccountController } from '../controller/accountController';
-import { Account } from '../model/account';
-import axios from 'axios';
-import { Connector } from '../data/connection';
+import { registerAccount } from '../services/accountService';
 
 const SignInScreen = ({ navigation }) => {
   const { language } = useContext(LanguageContext);
@@ -70,12 +67,19 @@ const SignInScreen = ({ navigation }) => {
     }
 
     try {
-      let account = new Account(firstName, lastName, email, phoneNumber, profilePhoto, birthdate, password);
-      await AccountController.addAccountWithPFP(account);
+      await registerAccount({
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        birthdate,
+        password,
+        profilePhoto
+      });
       Alert.alert(language === 'fr' ? 'Inscription réussie!' : 'Registration successful!');
       navigation.navigate('Login');
     } catch (err) {
-      console.log(err);
+      Alert.alert(language === 'fr' ? 'Erreur' : 'Error', err?.response?.data?.message || err.message || 'Registration failed.');
     }
   };
 

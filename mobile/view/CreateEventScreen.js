@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
-import { v4 as uuidv4 } from 'uuid';
-import 'react-native-get-random-values';
+import { createEvent } from '../services/eventService';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ActionSheet from 'react-native-actionsheet';
 import * as Location from 'expo-location';
@@ -88,23 +87,25 @@ const CreateEventScreen = () => {
   };
 
   const handleCreateEvent = async () => {
-    const newEvent = {
-      id: uuidv4(),
-      title,
-      description,
-      startDate: { day: startDate.getDate(), month: startDate.getMonth() + 1, year: startDate.getFullYear() },
-      endDate: { day: endDate.getDate(), month: endDate.getMonth() + 1, year: endDate.getFullYear() },
-      startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      endTime: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      organisateur,
-      image,
-      interestedCount: 0,
-      publicInfo,
-      address, // Ajouter l'adresse au nouvel événement
-      coordinate: coordinates,
-    };
-
-    navigation.navigate('Home', { newEvent });
+    try {
+      await createEvent({
+        title,
+        description,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        organisateur,
+        publicInfo,
+        address,
+        coordinates,
+        image
+      });
+      Alert.alert(language === 'fr' ? "Événement créé !" : "Event created!");
+      navigation.navigate('Home');
+    } catch (err) {
+      Alert.alert(language === 'fr' ? 'Erreur' : 'Error', err?.response?.data?.message || err.message || 'Event creation failed.');
+    }
   };
 
   const onChangeStartDate = (event, selectedDate) => {

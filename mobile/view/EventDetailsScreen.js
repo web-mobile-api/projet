@@ -1,36 +1,43 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { LanguageContext } from './LanguageContext';
+import { getEventDetails } from '../services/eventDetailsService';
+
 
 const EventDetailsScreen = ({ route }) => {
   const { language } = useContext(LanguageContext);
-  const { event, selectedDate } = route.params;
+  const { eventId } = route.params;
   const navigation = useNavigation();
+  const [event, setEvent] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  // Convertir la date en une chaîne de caractères lisible
-  const formatDate = (date) => {
-    const monthNames = language === 'fr' ? [
-      'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
-    ] : [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    const monthName = monthNames[parseInt(date.month) - 1];
-    return `${date.day} ${monthName} ${date.year}`;
-  };
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const data = await getEventDetails(eventId);
+        setEvent(data);
+        setComments(data.Comment || []);
+      } catch (err) {
+        Alert.alert(language === 'fr' ? 'Erreur' : 'Error', err?.response?.data?.message || err.message || 'Failed to load event.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvent();
+  }, [eventId, language]);
 
   const handleAddComment = () => {
     if (newComment.trim()) {
+      // This is a placeholder for posting a comment to the API
       const newCommentObj = {
         id: Date.now().toString(),
         content: newComment,
-        author: 'User Name', // Remplacez par le nom de l'utilisateur actuel
-        profilePicture: 'https://via.placeholder.com/150', // Remplacez par l'URL de la photo de profil de l'utilisateur
+        author: 'User Name',
+        profilePicture: 'https://via.placeholder.com/150',
         date: new Date().toLocaleString(),
       };
       setComments([...comments, newCommentObj]);
@@ -55,34 +62,42 @@ const EventDetailsScreen = ({ route }) => {
     );
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>{language === 'fr' ? 'Chargement...' : 'Loading...'}</Text>
+      </View>
+    );
+  }
+  if (!event) {
+    return (
+      <View style={styles.container}>
+        <Text>{language === 'fr' ? 'Événement introuvable.' : 'Event not found.'}</Text>
+      </View>
+    );
+  }
+
+  // Helper to format date/time
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString(language === 'fr' ? 'fr-FR' : 'en-US');
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Image source={{ uri: event.image }} style={styles.eventImage} />
+        {event.EventPhoto && event.EventPhoto.length > 0 && event.EventPhoto[0].file_name ? (
+          <Image source={{ uri: event.EventPhoto[0].file_name }} style={styles.eventImage} />
+        ) : null}
         <View style={styles.eventDetails}>
-          <Text style={styles.eventTitle}>{event.title}</Text>
-          <Text style={styles.eventDate}>{formatDate(event.startDate)} , {event.startTime}</Text>
-          <Text style={styles.eventLocation}>{event.address}</Text>
-          <Text style={styles.eventTime}>{language === 'fr' ? "Heure: " : "Time: "} {event.startTime} - {event.endTime}</Text>
+          <Text style={styles.eventTitle}>{event.name || event.title}</Text>
+          <Text style={styles.eventDate}>{formatDateTime(event.date)}</Text>
+          <Text style={styles.eventLocation}>{event.Location ? event.Location.address : ''}</Text>
+          {/* You can add more event details here as needed */}
         </View>
         <View style={styles.detailsSection}>
           <Text style={styles.sectionTitle}>{language === 'fr' ? "Détails" : "Details"}</Text>
-          <View style={styles.detailItem}>
-            <Icon name="users" size={20} color="#6200EE" />
-            <Text style={styles.detailText}>{event.interestedCount} {language === 'fr' ? "personnes ont répondu" : "people responded"}</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Icon name="university" size={20} color="#6200EE" />
-            <Text style={styles.detailText}>{language === 'fr' ? "Organisateur: " : "Organizer: "} {event.organisateur}</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Icon name="map-marker" size={20} color="#6200EE" />
-            <Text style={styles.detailText}>{event.address}</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Icon name="globe" size={20} color="#6200EE" />
-            <Text style={styles.detailText}>{event.publicInfo}</Text>
-          </View>
+          {/* Add more details as needed */}
         </View>
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.actionButton}>
@@ -101,14 +116,14 @@ const EventDetailsScreen = ({ route }) => {
         <View style={styles.commentsSection}>
           <Text style={styles.sectionTitle}>{language === 'fr' ? "Commentaires" : "Comments"}</Text>
           {comments.map(comment => (
-            <View key={comment.id} style={styles.comment}>
-              <Image source={{ uri: comment.profilePicture }} style={styles.profilePicture} />
+            <View key={comment.comment_id || comment.id} style={styles.comment}>
+              <Image source={{ uri: comment.author_profile_picture || 'https://via.placeholder.com/150' }} style={styles.profilePicture} />
               <View style={styles.commentContent}>
-                <Text style={styles.commentAuthor}>{comment.author}</Text>
-                <Text style={styles.commentDate}>{comment.date}</Text>
-                <Text style={styles.commentText}>{comment.content}</Text>
+                <Text style={styles.commentAuthor}>{comment.author_name || comment.author || 'User'}</Text>
+                <Text style={styles.commentDate}>{formatDateTime(comment.created_at || comment.date)}</Text>
+                <Text style={styles.commentText}>{comment.content || comment.text}</Text>
               </View>
-              <TouchableOpacity onPress={() => handleReportComment(comment.id)}>
+              <TouchableOpacity onPress={() => handleReportComment(comment.comment_id || comment.id)}>
                 <Icon name="flag" size={20} color="#FF0000" />
               </TouchableOpacity>
             </View>
