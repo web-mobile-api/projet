@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { LanguageContext } from './LanguageContext';
+import { AuthContext } from '../contexts/AuthContext'
 
 const SettingsScreen = () => {
   const { language } = useContext(LanguageContext);
@@ -15,6 +16,7 @@ const SettingsScreen = () => {
   });
 
   const handleLogout = () => {
+    
     // Naviguer vers la page de login
     navigation.navigate('Login');
   };

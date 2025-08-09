@@ -2,6 +2,7 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 const api = axios.create({
+    //Change the URL to your API endpoint
     baseURL: "https://localhost:3001"
 });
 

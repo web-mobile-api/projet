@@ -4,16 +4,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { LanguageContext } from './LanguageContext';
+import { getFriendListByAccountId, deleteFriendship } from '../services/friendService';
 
 const FriendsScreen = () => {
   const { language } = useContext(LanguageContext);
   const navigation = useNavigation();
 
-  const [friends, setFriends] = useState([
-    { id: 1, name: 'Alice Johnson', avatar: require('./assets/avatar1.png'), mutualFriends: 5 },
-    { id: 2, name: 'Bob Brown', avatar: require('./assets/avatar2.png'), mutualFriends: 3 },
-    // Add more friends here
-  ]);
+  const [friends, setFriends] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredFriends, setFilteredFriends] = useState(friends);
@@ -39,6 +36,28 @@ const FriendsScreen = () => {
     };
   }, []);
 
+
+  // Fetch friends from API on mount
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        // TODO: Replace 1 with the actual logged-in user ID
+        const userId = 1;
+        const data = await getFriendListByAccountId(userId);
+        // Map backend data to UI format if needed
+        setFriends(data.map(f => ({
+          id: f.friend2_id || f.friend1_id,
+          name: f.name || `Friend ${f.friend2_id || f.friend1_id}`,
+          avatar: require('./assets/avatar1.png'), // Placeholder, replace with real avatar if available
+          mutualFriends: 0 // Placeholder, replace if available
+        })));
+      } catch (err) {
+        Alert.alert('Error', 'Failed to fetch friends.');
+      }
+    };
+    fetchFriends();
+  }, []);
+
   useEffect(() => {
     handleSearch(searchQuery);
   }, [friends]);
@@ -62,10 +81,15 @@ const FriendsScreen = () => {
         },
         {
           text: language === 'fr' ? 'Supprimer' : 'Delete',
-          onPress: () => {
-            const updatedFriends = friends.filter(friend => friend.id !== id);
-            setFriends(updatedFriends);
-            setFilteredFriends(updatedFriends);
+          onPress: async () => {
+            try {
+              await deleteFriendship(id);
+              const updatedFriends = friends.filter(friend => friend.id !== id);
+              setFriends(updatedFriends);
+              setFilteredFriends(updatedFriends);
+            } catch (err) {
+              Alert.alert('Error', 'Failed to delete friend.');
+            }
           },
         },
       ],

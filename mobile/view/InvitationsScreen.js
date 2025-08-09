@@ -1,31 +1,55 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { LanguageContext } from './LanguageContext';
+import { getReceivedInvitations, deleteInvitation, updateInvitation } from '../services/invitationService';
 
 const InvitationsScreen = () => {
   const { language } = useContext(LanguageContext);
   const navigation = useNavigation();
 
-  const [friends, setFriends] = useState([
-    // Initial friends list
-  ]);
 
-  const [invitations, setInvitations] = useState([
-    { id: 1, name: 'Alice Johnson', avatar: require('./assets/avatar3.png'), mutualFriends: 5 },
-    { id: 2, name: 'Bob Brown', avatar: require('./assets/avatar4.png'), mutualFriends: 3 },
-  ]);
+  const [friends, setFriends] = useState([]);
+  const [invitations, setInvitations] = useState([]);
 
-  const handleAcceptInvitation = (invitation) => {
-    setFriends([...friends, invitation]);
-    const updatedInvitations = invitations.filter(inv => inv.id !== invitation.id);
-    setInvitations(updatedInvitations);
+  // Fetch invitations from API on mount
+  useEffect(() => {
+    const fetchInvitations = async () => {
+      try {
+        // TODO: Replace 1 with the actual logged-in user ID
+        const userId = 1;
+        const data = await getReceivedInvitations(userId);
+        setInvitations(data.map(inv => ({
+          id: inv.invitation_id,
+          name: inv.sender_name || `User ${inv.sender_id}`,
+          avatar: require('./assets/avatar3.png'), // Placeholder
+          mutualFriends: 0 // Placeholder
+        })));
+      } catch (err) {
+        // Optionally show error
+      }
+    };
+    fetchInvitations();
+  }, []);
+
+  const handleAcceptInvitation = async (invitation) => {
+    try {
+      await updateInvitation(invitation.id, 'accepted');
+      setFriends([...friends, invitation]);
+      setInvitations(invitations.filter(inv => inv.id !== invitation.id));
+    } catch (err) {
+      // Optionally show error
+    }
   };
 
-  const handleRejectInvitation = (id) => {
-    const updatedInvitations = invitations.filter(invitation => invitation.id !== id);
-    setInvitations(updatedInvitations);
+  const handleRejectInvitation = async (id) => {
+    try {
+      await deleteInvitation(id);
+      setInvitations(invitations.filter(invitation => invitation.id !== id));
+    } catch (err) {
+      // Optionally show error
+    }
   };
 
   return (

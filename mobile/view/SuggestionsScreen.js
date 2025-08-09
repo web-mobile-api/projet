@@ -1,25 +1,46 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { LanguageContext } from './LanguageContext';
+import { addFriendship, getFriendListByAccountId } from '../services/friendService';
 
 const SuggestionsScreen = () => {
   const { language } = useContext(LanguageContext);
   const navigation = useNavigation();
 
-  const [suggestions, setSuggestions] = useState([
-    { id: 1, name: 'Charlie Davis', avatar: require('./assets/avatar5.png'), mutualFriends: 7 },
-    { id: 2, name: 'Diana Evans', avatar: require('./assets/avatar6.png'), mutualFriends: 2 },
-  ]);
 
+  const [suggestions, setSuggestions] = useState([]);
   const [friends, setFriends] = useState([]);
 
-  const handleAddFriend = (id) => {
-    const friendToAdd = suggestions.find(suggestion => suggestion.id === id);
-    setFriends([...friends, friendToAdd]);
-    const updatedSuggestions = suggestions.filter(suggestion => suggestion.id !== id);
-    setSuggestions(updatedSuggestions);
+  // Fetch suggestions and friends from API on mount
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        // TODO: Replace 1 with the actual logged-in user ID
+        const userId = 1;
+        // For demo, fetch all users and filter out friends and self
+        // You may need a dedicated endpoint for suggestions
+        const allUsers = [];
+        // setSuggestions(allUsers.filter(...));
+      } catch (err) {
+        // Optionally show error
+      }
+    };
+    fetchSuggestions();
+  }, []);
+
+  const handleAddFriend = async (id) => {
+    try {
+      // TODO: Replace 1 with the actual logged-in user ID
+      const userId = 1;
+      await addFriendship(userId, id);
+      const friendToAdd = suggestions.find(suggestion => suggestion.id === id);
+      setFriends([...friends, friendToAdd]);
+      setSuggestions(suggestions.filter(suggestion => suggestion.id !== id));
+    } catch (err) {
+      // Optionally show error
+    }
   };
 
   return (
