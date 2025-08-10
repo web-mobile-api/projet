@@ -54,12 +54,11 @@ export const addAdmin = async(req, res) => {
             res.sendStatus(403)
         }
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.sendStatus(500);
     }
 }
 
-// Any admin can update another admin
 export const updateAdmin = async(req, res) => {
     try {
         if (req.Permission != Permission.Admin) {
@@ -84,7 +83,6 @@ export const updateAdmin = async(req, res) => {
     }
 }
 
-// Any admin can delete another admin
 export const deleteAdmin = async(req, res) => {
     try {
         if (req.Permission != Permission.Admin) {

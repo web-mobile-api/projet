@@ -41,11 +41,14 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="services/eventDetailsService.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
-            const eventId = urlParams.get('id');
-
+            const eventId = parseInt(urlParams.get('id'));
+            
+            const event = getEventDetails(eventId);
+            console.log(event);
             const events = {
                 1: {
                     title: 'Soirée Étudiante à Paris - 01/01/2025',
@@ -109,7 +112,7 @@
                 }
             };
 
-            const event = events[eventId];
+            const oldEvent = events[eventId];
             if (event) {
                 const eventDetails = `
                     <div class="col-md-8">

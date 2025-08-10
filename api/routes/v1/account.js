@@ -60,7 +60,6 @@ import { addAccountWithpfp } from "../../controller/accountTransaction.js";
  *         - phone_number
  *         - birthdate
  */
-
 const router = Router();
 
 router.post("/login", login);
@@ -76,9 +75,13 @@ router.get("/ids", authenticateToken, async (req, res, next) => {
     }
 
     const accountIDs = accountIDsParam.split(',').map(id => parseInt(id, 10));
-    console.log("IDs: ", accountIDs);
-    req.query.accountIDs = accountIDs;
-    next();
+    if (accountIDs.length > 10) {
+        res.sendStatus(500)
+    } else {
+        console.log("IDs: ", accountIDs);
+        req.query.accountIDs = accountIDs;
+        next();
+    }
 }, getMultipleAccounts);
 router.get("/id/:id", authenticateToken, getAccount);
 router.delete("/:id", authenticateToken, authenticateAdmin, deleteAccount);

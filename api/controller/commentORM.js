@@ -16,6 +16,10 @@ import { Permission } from "../middleware/authMiddleware.js";
  *     responses:
  *       200:
  *         description: A single comment
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
  *       404:
  *         description: Comment not found
  *       500:
@@ -60,6 +64,12 @@ export const getComment = async (req, res)=> {
  *     responses:
  *       200:
  *         description: A list of comments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comment'
  *       404:
  *         description: Comments not found
  *       500:

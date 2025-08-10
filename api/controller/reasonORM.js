@@ -1,5 +1,4 @@
 import prisma from "../database/databaseORM.js";
-import bcryptjs from "bcryptjs";
 import { Permission } from "../middleware/authMiddleware.js";
 
 export const addReport = async (req, res) => {

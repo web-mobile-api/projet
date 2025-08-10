@@ -18,22 +18,9 @@ import prisma from "../database/databaseORM.js";
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 location_id:
- *                   type: integer
- *                 street:
- *                   type: string
- *                 num:
- *                   type: integer
- *                 city:
- *                   type: string
- *                 code:
- *                   type: integer
- *                 country:
- *                   type: string
- *                 position:
- *                   type: string
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Location'
  *       404:
  *         description: Location not found
  *       500:
@@ -75,22 +62,9 @@ export const getLocationById = async (req, res)=> {
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 location_id:
- *                   type: integer
- *                 street:
- *                   type: string
- *                 num:
- *                   type: integer
- *                 city:
- *                   type: string
- *                 code:
- *                   type: integer
- *                 country:
- *                   type: string
- *                 position:
- *                   type: string
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Location'
  *       404:
  *         description: Location not found
  *       500:
@@ -208,12 +182,11 @@ export const addLocation = async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-//todo: Make it so the one who created the event can modify the location (maybe just create a new one?)
 export const updateLocation = async (req, res) => {
     try {
         const { location_id, street, num, city, code, country, position } = req.body;
 
-        if (req.perm == Permission.Admin) {
+        if (req.perm === Permission.Admin) {
             await prisma.location.update({
                 data: {
                     street,
@@ -259,7 +232,7 @@ export const updateLocation = async (req, res) => {
  */
 export const deleteLocationByPosition = async (req, res) => {
     try {
-        if (req.perm == Permission.Admin) {
+        if (req.perm === Permission.Admin) {
             await prisma.location.delete({
                 where: {
                     position: req.params.position
