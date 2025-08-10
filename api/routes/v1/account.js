@@ -61,7 +61,6 @@ import { addAccountWithpfp } from "../../controller/accountTransaction.js";
  *         - birthdate
  */
 
-const router = Router();
 
 router.post("/login", login);
 router.patch("/heartbeat", authenticateToken, heartbeat);
