@@ -8,26 +8,37 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+
     useEffect(() => {
         (async () => {
             const token = await SecureStore.getItemAsync('authToken');
-            if (token) {
-                setUser({token});
+            const userId = await SecureStore.getItemAsync('userId');
+            if (token && userId) {
+                setUser({ token, userId });
+            } else if (token) {
+                setUser({ token });
             }
             setLoading(false);
         })();
     }, []);
 
+
     const login = async(email, password) => {
         const data = await loginService(email, password);
-        if (data.token) {
+        if (data.token && data.account_id) {
             await SecureStore.setItemAsync('authToken', data.token);
-            setUser({token: data.token});
+            await SecureStore.setItemAsync('userId', String(data.account_id));
+            setUser({ token: data.token, userId: String(data.account_id) });
+        } else if (data.token) {
+            await SecureStore.setItemAsync('authToken', data.token);
+            setUser({ token: data.token });
         }
     };
 
+
     const logout = async () => {
         await SecureStore.deleteItemAsync('authToken');
+        await SecureStore.deleteItemAsync('userId');
         setUser(null);
     };
 

@@ -5,6 +5,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { LanguageContext } from './LanguageContext';
 import { getFriendListByAccountId, deleteFriendship } from '../services/friendService';
+import { AuthProvider } from '../contexts/AuthContext';
 
 const FriendsScreen = () => {
   const { language } = useContext(LanguageContext);
@@ -41,8 +42,8 @@ const FriendsScreen = () => {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        // TODO: Replace 1 with the actual logged-in user ID
-        const userId = 1;
+        const { user } = useContext(AuthProvider);
+        const userId = user?.userId;
         const data = await getFriendListByAccountId(userId);
         // Map backend data to UI format if needed
         setFriends(data.map(f => ({

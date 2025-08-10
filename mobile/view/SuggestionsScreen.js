@@ -17,12 +17,11 @@ const SuggestionsScreen = () => {
   useEffect(() => {
     const fetchSuggestions = async () => {
       try {
-        // TODO: Replace 1 with the actual logged-in user ID
-        const userId = 1;
-        // For demo, fetch all users and filter out friends and self
-        // You may need a dedicated endpoint for suggestions
-        const allUsers = [];
-        // setSuggestions(allUsers.filter(...));
+        //Suggestions should be the friends of 3 random friends
+        const randomFriends = friends.sort(() => 0.5 - Math.random()).slice(0, 3);
+        const friendIds = randomFriends.map(friend => friend.id);
+        const allUsers = await getFriendListByAccountId(userId);
+        setSuggestions(allUsers.filter(user => !friendIds.includes(user.id)));
       } catch (err) {
         // Optionally show error
       }

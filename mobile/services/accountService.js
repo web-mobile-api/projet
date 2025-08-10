@@ -55,20 +55,3 @@ export async function login(email, password) {
     const {data} = await api.post('/v1/account/login', {email, password});
     return data;
 }
-
-
-
-export async function getFriendList(id) {
-    const { data } = await api.get(`/v1/account/${id}/friends`);
-    return data;
-}
-
-export async function deleteFriend(friendShipId) {
-    const { data } = await api.delete(`/v1/account/friends/${friendShipId}`);
-    return data;
-}
-
-export async function addFriend(id, friendId) {
-    const { data } = await api.post(`/v1/account/friends`, { friend1_id: id, friend2_id: friendId });
-    return data;
-}
