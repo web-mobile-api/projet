@@ -10,7 +10,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="Index.html">
             <img src="logo.png" width="120" height="100" alt="T-Event Logo">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
                         <p class="card-text">${user.phone}</p>
                         <p class="card-text">${user.birthdate}</p>
                         <p class="card-text">ID: ${user.id}</p>
-                        <button class="btn btn-danger mt-2" id="banButton">Bannir</button>
+                        <button class="btn btn-danger mt-2" id="banButton" onclick="window.deleteAccount(${user.id})">Bannir</button>
                     </div>
                 `;
                 document.getElementById('profile-details').innerHTML = profileDetail;
@@ -73,17 +73,18 @@
                             <script src="services/accountService.js"></script>
                             <script src="services/commentService.js"></script>
                             <script>
-                                const allEventsIDs = await window.getAllEvents().then(events => events.map(event => event.id));
-                                //Need to use the getCommentsByAuthorAndEvent so need to loop over all the events
-                                for (const eventId of allEventsIDs) {
-                                    const comments = await window.getCommentsByAuthorAndEvent(window.userId, eventId);
-                                    comments.forEach(comment => {
-                                        const commentItem = document.createElement('li');
-                                        commentItem.className = 'list-group-item';
-                                        commentItem.textContent = comment.content + ' - ' + comment.author;
-                                        document.querySelector('.list-group').appendChild(commentItem);
-                                    });
-                                }
+                                document.addEventListener('DOMContentLoaded', async function() {
+                                    const allEventsIDs = await window.getAllEvents().then(events => events.map(event => event.id));
+                                    for (const eventId of allEventsIDs) {
+                                        const comments = await window.getCommentsByAuthorAndEvent(window.userId, eventId);
+                                        comments.forEach(comment => {
+                                            const commentItem = document.createElement('li');
+                                            commentItem.className = 'list-group-item';
+                                            commentItem.textContent = comment.content + ' - ' + comment.author;
+                                            document.querySelector('.list-group').appendChild(commentItem);
+                                        });
+                                    }
+                                });
                             </script>
                         </ul>
                     </div>
@@ -93,14 +94,15 @@
                         <h5 class="card-title">Participations aux événements</h5>
                         <ul class="list-group">
                             <script>
-                                //Only show events the user is participating in
-                                const allEvents = await window.getAllEvents();
-                                const userEvents = allEvents.filter(event => event.participants.includes(window.userId));
-                                userEvents.forEach(event => {
-                                    const eventItem = document.createElement('li');
-                                    eventItem.className = 'list-group-item';
-                                    eventItem.innerHTML = `<a href="event_details.html?id=${event.id}">${event.title} - ${event.date}</a>`;
-                                    document.querySelector('.list-group').appendChild(eventItem);
+                                document.addEventListener('DOMContentLoaded', async function() {
+                                    const allEvents = await window.getAllEvents();
+                                    const userEvents = allEvents.filter(event => event.participants.includes(window.userId));
+                                    userEvents.forEach(event => {
+                                        const eventItem = document.createElement('li');
+                                        eventItem.className = 'list-group-item';
+                                        eventItem.innerHTML = `<a href="event_details.html?id=${event.id}">${event.title} - ${event.date}</a>`;
+                                        document.querySelector('.list-group').appendChild(eventItem);
+                                    });
                                 });
                             </script>
                         </ul>
