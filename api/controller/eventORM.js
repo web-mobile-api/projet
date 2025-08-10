@@ -10,6 +10,12 @@ import { Permission } from "../middleware/authMiddleware.js";
  *     responses:
  *       200:
  *         description: A list of upcoming events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Event'
  *       404:
  *         description: Events not found
  *       500:
@@ -61,6 +67,12 @@ export const getAllEvents = async (req, res) => {
  *     responses:
  *       200:
  *         description: A list of events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Event'
  *       404:
  *         description: Events not found
  *       500:
@@ -80,7 +92,6 @@ export const getEventsFrom = async(req, res) => {
             }
         })
         if (events) {
-            //before sending there should be a cleanup, cuz way too much useless info
             res.send(events);
         } else {
             res.send(404);
@@ -106,6 +117,10 @@ export const getEventsFrom = async(req, res) => {
  *     responses:
  *       200:
  *         description: A single event
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
  *       404:
  *         description: Event not found
  *       500:
@@ -131,7 +146,6 @@ export const getEvent = async (req, res)=> {
             },
         });
         if(event){
-            //just so it doesn't get confusing cuz we already have event.Location.location_id
             delete event["location_id"]
             res.send(event);
         } else {

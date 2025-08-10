@@ -19,6 +19,12 @@ import { upload } from "./photoORM.js";
  *     responses:
  *       200:
  *         description: The requested photo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/EventPhoto'
  *       404:
  *         description: Photo not found
  *       500:
@@ -186,7 +192,7 @@ export const deleteEventPhoto = async (req, res) => {
 /**
  * @swagger
  * /eventPhoto/{id}:
- *   put:
+ *   patch:
  *     summary: Update a specific event photo by ID
  *     parameters:
  *       - in: path

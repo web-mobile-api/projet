@@ -38,7 +38,6 @@ const router = Router();
 router.post("/", authenticateToken, upload.single("photo"), addEventPhoto);
 router.patch("/", authenticateToken, authenticateAdmin, updateEventPhoto);
 router.get("/id/:id", authenticateToken, getEventPhoto);
-//This doesn't work for whatever reason
 router.delete("/:id", authenticateToken, authenticateAdmin, deleteEventPhoto);
 
 export default router;

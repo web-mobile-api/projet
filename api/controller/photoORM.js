@@ -32,6 +32,12 @@ export const upload = multer({ storage });
  *     responses:
  *       200:
  *         description: A single photo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Photo'
  *       404:
  *         description: Photo not found
  *       500:
@@ -70,6 +76,12 @@ export const getPhotoById = async (req, res)=> {
  *     responses:
  *       200:
  *         description: A single photo
+*         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Photo'
  *       404:
  *         description: Photo not found
  *       500:
@@ -116,7 +128,6 @@ export const getPhotoByPath = async (req, res)=> {
  */
 export const addPhoto = async (req, res) => {
     try {
-        console.log(req.file)
         const { filename, path: _filePath } = req.file;
     
         const photo = await prisma.photo.create({
@@ -224,7 +235,6 @@ export const deletePhoto = async (req, res) => {
             }
         });
         if (photo && req.perm === Permission.Admin) {
-            console.log(photo.file_name);
             fs.unlink("./uploads/" + photo.file_name, async (err) => {
                 if (err) {
                     console.error(err);

@@ -16,6 +16,12 @@ import { Permission } from "../middleware/authMiddleware.js";
  *     responses:
  *       200:
  *         description: A list of friends
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/FriendList'
  *       404:
  *         description: Friend list not found
  *       500:

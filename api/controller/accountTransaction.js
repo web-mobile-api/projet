@@ -40,11 +40,9 @@ const salt = bcryptjs.genSaltSync();
 export const addAccountWithpfp = async (req, res) => {
     try {
         const { first_name, last_name, password, email, phone_number, birthdate } = req.body;
-        console.log(`email: "${email}"`);
 
         const newAccount = await prisma.$transaction(async (prisma) => {
             const { filename, path: _filePath } = req.file;
-            console.log(req.file);
     
             const photo = await prisma.photo.create({
                 data: {
@@ -117,7 +115,6 @@ export const deleteAccount = async (req, res) => {
                         account_id
                     }
                 });
-                //this should also remove it form the filesystem
                 await prisma.photo.deleteMany({
                     where: {
                         photo_id: account.profile_picture
@@ -153,7 +150,6 @@ export const deleteAccount = async (req, res) => {
                         }
                     });
                 }
-                //this should also remove all the related event stuff (participant_list, comments, photo, ...)
                 await prisma.event.deleteMany({
                     where: {
                         author_id: account_id

@@ -170,6 +170,12 @@ export const updateInvitation = async (req, res) => {
  *     responses:
  *       200:
  *         description: A list of received invitations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Invitation'
  *       404:
  *         description: Invitations not found
  *       500:
@@ -215,6 +221,12 @@ export const getInvitationsAsReceiver = async (req, res) => {
  *     responses:
  *       200:
  *         description: A list of sent invitations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Invitation'
  *       404:
  *         description: Invitations not found
  *       500:

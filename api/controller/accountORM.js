@@ -20,6 +20,10 @@ const salt = bcryptjs.genSaltSync();
  *     responses:
  *       200:
  *         description: A single account
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Account'
  *       404:
  *         description: Account not found
  *       500:
@@ -59,6 +63,12 @@ export const getAccount = async (req, res) => {
  *     responses:
  *       200:
  *         description: A list of accounts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Account'
  *       404:
  *         description: Accounts not found
  *       500:
@@ -67,7 +77,6 @@ export const getAccount = async (req, res) => {
 export const getMultipleAccounts = async (req, res) => {
     try {
         const accountIds = req.query.accountIDs;
-        console.log("Ids: ", accountIds);
         const accounts = await prisma.account.findMany({
             where: {
                 account_id: {
@@ -121,7 +130,6 @@ export const getMultipleAccounts = async (req, res) => {
  */
 export const addAccount = async (req, res) => {
     try {
-        console.log("Req.Body: ", req.body);
         const { first_name, last_name, password, email, phone_number, birthdate, profile_picture } = req.body;
 
         const { account_id } = await prisma.account.create({
@@ -200,7 +208,7 @@ export const updateAccount = async (req, res) => {
             profile_picture
         } = req.body;
 
-        if (account && (req.perm == Permission.Admin || account_id === account.account_id)){
+        if (account && (req.perm === Permission.Admin || account_id === account.account_id)){
             await prisma.account.update({
                 data: {
                     first_name,
@@ -254,7 +262,7 @@ export const deleteAccount = async (req, res) => {
             }
         });
         const account_id = parseInt(req.params.id);
-        if (account && (req.perm == Permission.Admin || account_id === account.account_id)){
+        if (account && (req.perm === Permission.Admin || account_id === account.account_id)){
 
             await prisma.account.delete({
                 where: {
@@ -373,7 +381,7 @@ export const login = async (req, res) => {
                 "fr": "Connexion réussie!"
             },
             token: token,
-            user: user //this wasn't in the original code
+            user: user
         });
     } catch (error) {
         console.error(error);
