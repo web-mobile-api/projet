@@ -33,18 +33,33 @@
     </nav>
 
     <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="utils/api.js"></script>
+        <script src="services/accountService.js"></script>
+        <script src="services/commentService.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', async function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const userId = urlParams.get('id');
+                const user = await window.getAccountById(userId);
+                const profileDetail= `
                     <div class="card-body text-center">
                         <img src="photo.jpg" class="rounded-circle" width="100" height="100" alt="Photo de profil">
-                        <h5 class="card-title mt-2">Jean Dupont</h5>
-                        <p class="card-text">jean.dupont@example.com</p>
-                        <p class="card-text">06 12 34 56 78</p>
-                        <p class="card-text">01/01/1990</p>
-                        <p class="card-text">ID12345</p>
+                        <h5 class="card-title mt-2">${user.firstName} ${user.lastName}</h5>
+                        <p class="card-text">${user.email}</p>
+                        <p class="card-text">${user.phone}</p>
+                        <p class="card-text">${user.birthdate}</p>
+                        <p class="card-text">ID: ${user.id}</p>
                         <button class="btn btn-danger mt-2" id="banButton">Bannir</button>
                     </div>
+                `;
+                document.getElementById('profile-details').innerHTML = profileDetail;
+            });
+            </script>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card" id="profile-details">
+                    <!-- Les détails du profil de l'utilisateur seront affichés ici -->
                 </div>
             </div>
             <div class="col-md-8">
@@ -52,19 +67,42 @@
                     <div class="card-body">
                         <h5 class="card-title">Commentaires</h5>
                         <ul class="list-group">
-                            <li class="list-group-item">Super événement ! J'ai passé un excellent moment. - Marie Martin</li>
-                            <li class="list-group-item">L'ambiance était géniale et la musique était top. - Pierre Durand</li>
-                            <li class="list-group-item">J'ai rencontré plein de nouvelles personnes, c'était super ! - Sophie Renard</li>
+                            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+                            <script src="utils/api.js"></script>
+                            <script src="services/eventDetailsService.js"></script>
+                            <script src="services/accountService.js"></script>
+                            <script src="services/commentService.js"></script>
+                            <script>
+                                const allEventsIDs = await window.getAllEvents().then(events => events.map(event => event.id));
+                                //Need to use the getCommentsByAuthorAndEvent so need to loop over all the events
+                                for (const eventId of allEventsIDs) {
+                                    const comments = await window.getCommentsByAuthorAndEvent(window.userId, eventId);
+                                    comments.forEach(comment => {
+                                        const commentItem = document.createElement('li');
+                                        commentItem.className = 'list-group-item';
+                                        commentItem.textContent = comment.content + ' - ' + comment.author;
+                                        document.querySelector('.list-group').appendChild(commentItem);
+                                    });
+                                }
+                            </script>
                         </ul>
                     </div>
                 </div>
                 <div class="card mt-3">
                     <div class="card-body">
-                        <h5 class="card-title">Événements</h5>
+                        <h5 class="card-title">Participations aux événements</h5>
                         <ul class="list-group">
-                            <li class="list-group-item">Festival de Musique à Bordeaux - 04/01/2025</li>
-                            <li class="list-group-item">Soirée Thématique à Toulouse - 05/01/2025</li>
-                            <li class="list-group-item">Concert Jazz à Nantes - 06/01/2025</li>
+                            <script>
+                                //Only show events the user is participating in
+                                const allEvents = await window.getAllEvents();
+                                const userEvents = allEvents.filter(event => event.participants.includes(window.userId));
+                                userEvents.forEach(event => {
+                                    const eventItem = document.createElement('li');
+                                    eventItem.className = 'list-group-item';
+                                    eventItem.innerHTML = `<a href="event_details.html?id=${event.id}">${event.title} - ${event.date}</a>`;
+                                    document.querySelector('.list-group').appendChild(eventItem);
+                                });
+                            </script>
                         </ul>
                     </div>
                 </div>

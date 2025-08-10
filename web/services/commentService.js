@@ -1,24 +1,27 @@
-import api from "../utils/api";
-
-// Get a single comment by ID
-export async function getCommentById(id) {
-  const { data } = await api.get(`/v1/comment/${id}`);
-  return data;
+  // Get a single comment by ID
+window.getCommentById = async function(id) {
+  //const { data } = await window.api.get(`/v1/comment/${id}`);
+  return {
+    content: "Hello",
+    id: 1,
+    author_id: 1,
+    event_id: 1
+  };
 }
 
 // Get comments by author and event
-export async function getCommentsByAuthorAndEvent(author_id, event_id) {
-  const { data } = await api.get(`/v1/comments?author_id=${author_id}&event_id=${event_id}`);
+window.getCommentsByAuthorAndEvent = async function(author_id, event_id) {
+  const { data } = await window.api.get(`/v1/comments?author_id=${author_id}&event_id=${event_id}`);
   return data;
 }
 
 // Add a new comment
-export async function addComment({ content, author_id, event_id }) {
-  const { data } = await api.post('/v1/comment', { content, author_id, event_id });
+window.addComment = async function({ content, author_id, event_id }) {
+  const { data } = await window.api.post('/v1/comment', { content, author_id, event_id });
   return data;
 }
 
 // Delete a comment by ID
-export async function deleteComment(id) {
-  await api.delete(`/v1/comment/${id}`);
+window.deleteComment = async function(id) {
+  await window.api.delete(`/v1/comment/${id}`);
 }

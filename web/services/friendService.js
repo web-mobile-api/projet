@@ -1,23 +1,21 @@
-import api from "../utils/api";
-
 // Get friend list by account ID
-export async function getFriendListByAccountId(id) {
-  const { data } = await api.get(`/v1/friendList/${id}`);
+window.getFriendListByAccountId = async function(id) {
+  const { data } = await window.api.get(`/v1/friendList/${id}`);
   return data;
 }
 
 // Add a new friendship
-export async function addFriendship(friend1_id, friend2_id) {
-  const { data } = await api.post('/v1/friendList', { friend1_id, friend2_id });
+window.addFriendship = async function(friend1_id, friend2_id) {
+  const { data } = await window.api.post('/v1/friendList', { friend1_id, friend2_id });
   return data;
 }
 
 // Update a friendship
-export async function updateFriendship(friend1_id, friend2_id) {
-  await api.patch('/v1/friendList', { friend1_id, friend2_id });
+window.updateFriendship = async function(friend1_id, friend2_id) {
+  await window.api.patch('/v1/friendList', { friend1_id, friend2_id });
 }
 
 // Delete a friendship by ID
-export async function deleteFriendship(id) {
-  await api.delete(`/v1/friendList/${id}`);
+window.deleteFriendship = async function(id) {
+  await window.api.delete(`/v1/friendList/${id}`);
 }

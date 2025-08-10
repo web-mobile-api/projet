@@ -1,15 +1,13 @@
-const axios = require("axios")
 
-export const api = axios.create({
-    //Change the URL to your API endpoint
+// Assumes axios is loaded globally (via CDN in HTML)
+window.token = undefined;
+window.userId = undefined;
+window.api = axios.create({
     baseURL: "https://localhost:3001"
 });
-
-export let token = undefined;
-
-api.interceptors.request.use((config) => {
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+window.api.interceptors.request.use((config) => {
+    if (window.token) {
+        config.headers.Authorization = `Bearer ${window.token}`;
     }
     return config;
 });
