@@ -1,10 +1,8 @@
-  // Get event photo by ID
 window.getEventPhotoById = async function(id) {
   const { data } = await window.api.get(`/eventPhoto/${id}`);
   return data;
 }
 
-// Add a new event photo
 window.addEventPhoto = async function(photoFile) {
   const formData = new FormData();
   formData.append('file', photoFile);
@@ -14,7 +12,6 @@ window.addEventPhoto = async function(photoFile) {
   return data;
 }
 
-// Update event photo by ID
 window.updateEventPhoto = async function(id, photoFile) {
   const formData = new FormData();
   formData.append('file', photoFile);
@@ -24,7 +21,6 @@ window.updateEventPhoto = async function(id, photoFile) {
   return data;
 }
 
-// Delete event photo by ID
 window.deleteEventPhoto = async function(id) {
   await window.api.delete(`/eventPhoto/${id}`);
 }

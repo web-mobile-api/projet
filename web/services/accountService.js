@@ -1,39 +1,25 @@
-// Get account by ID
 window.getAccountById = async function(id) {
-    //const { data } = await window.api.get(`/v1/account/id/${id}`);
-    return {
-        first_name: 'John',
-        last_name: 'Doe',
-        email: 'john.doe@example.com',
-        phone: '123-456-7890',
-        birthdate: '1990-01-01',
-        id: 1
-    };
+    const { data } = await window.api.get(`/v1/account/id/${id}`);
+    return data;
 }
 
-// Get multiple accounts by IDs (comma-separated string)
 window.getAccountsByIds = async function(accountIDs) {
     const { data } = await window.api.get(`/v1/account/ids?accountIDs=${accountIDs}`);
     return data;
 }
 
-// Update account
 window.updateAccount = async function(account) {
     await window.api.patch('/v1/account', account);
 }
 
-// Delete account by ID
 window.deleteAccount = async function(id) {
     await window.api.delete(`/v1/account/${id}`);
 }
 
-// Heartbeat (update online status)
 window.heartbeat = async function() {
     await window.api.patch('/v1/account/heartbeat');
 }
 
-
-// Register a new account with profile picture
 window.registerAccount = async function({ firstName, lastName, email, phoneNumber, birthdate, password, profilePhoto }) {
     const formData = new FormData();
     formData.append('first_name', firstName);
@@ -59,7 +45,8 @@ window.registerAccount = async function({ firstName, lastName, email, phoneNumbe
 
 window.loginUser = async function(email, password) {
     const {data} = await window.api.post('/v1/account/login', {email, password});
-    token = data.token;
+    window.token = data.token;
+    localStorage.setItem('token', data.token);
     return data;
 }
 

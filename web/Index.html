@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
+<script>
+    window.token = localStorage.getItem('token');
+    if (!window.token) {
+        window.location.href = 'login.html';
+    }
+</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

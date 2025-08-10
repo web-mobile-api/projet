@@ -1,5 +1,51 @@
 <!DOCTYPE html>
 <html lang="fr">
+<script>
+window.token = localStorage.getItem('token');
+if (!window.token) {
+    window.location.href = 'login.html';
+}
+</script>
+<div class="modal fade" id="updateEventModal" tabindex="-1" role="dialog" aria-labelledby="updateEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateEventModalLabel">Modifier l'événement</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateEventForm">
+                    <div class="form-group">
+                        <label for="updateEventTitle">Titre</label>
+                        <input type="text" class="form-control" id="updateEventTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateEventDescription">Description</label>
+                        <textarea class="form-control" id="updateEventDescription" name="description" rows="3" required></textarea>
+                    </div>
+                    <div>
+                        <label for="updateEventDate">Date</label>
+                        <input type="date" class="form-control" id="updateEventDate" name="date" required>
+                    </div>
+                    <div>
+                        <label for="updateEventLocation">Localisation</label>
+                        <input type="text" class="form-control" id="updateEventLocation" name="location" required>
+                    </div>
+                    <div>
+                        <label for="updateEventApproval">Approbation</label>
+                        <select class="form-control" id="updateEventApproval" name="approval">
+                            <option value="true">Approuvé</option>
+                            <option value="false">Non approuvé</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,17 +104,71 @@
                             <div class="card shadow">
                                 <img src="event_image.jpg" class="card-img-top" alt="Image de l'événement">
                                 <div class="card-body">
-                                    <h5 class="card-title">${event.title}</h5>
+                                    <h5 class="card-title">${event.name}</h5>
                                     <p class="card-text">${event.description}</p>
                                     <div class="btn-group" role="group" aria-label="Basic example">
                                         <button class="btn btn-success" id="approveButton">Approuver</button>
-                                        <!-- TODO: Implement modifyEvent function -->
-                                        <button class="btn btn-primary" id="modifyButton">Modifier</button>
+                                        <button class="btn btn-primary" id="modifyButton" data-toggle="modal" data-target="#updateEventModal">Modifier</button>
                                         <button class="btn btn-danger" id="deleteButton" onclick="window.deleteEvent(${eventId})">Supprimer</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    `;
+                    document.getElementById('event-details').innerHTML = eventDetails;
+                } else {
+                    document.getElementById('event-details').innerHTML = '<div class="col-12"><div class="alert alert-warning">Aucun événement trouvé.</div></div>';
+                }
+            } catch (error) {
+                document.getElementById('event-details').innerHTML = '<div class="col-12"><div class="alert alert-danger">Erreur lors du chargement de l\'événement.</div></div>';
+                console.error(error);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateEventForm = document.getElementById('updateEventForm');
+            if (updateEventForm) {
+                updateEventForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const eventId = parseInt(urlParams.get('id'));
+                    const title = document.getElementById('updateEventTitle').value;
+                    const description = document.getElementById('updateEventDescription').value;
+                    const date = document.getElementById('updateEventDate').value;
+                    const localisation = document.getElementById('updateEventLocation').value;
+                    const approval = document.getElementById('updateEventApproval').value;
+
+                    try {
+                        await window.updateEvent(eventId, { title, description, date, location: localisation, is_approved: approval === 'Approuvé' });
+                        $('#updateEventModal').modal('hide');
+                        location.reload();
+                    } catch (err) {
+                        alert('Erreur lors de la mise à jour de l\'événement.');
+                        console.error(err);
+                    }
+                });
+            }
+
+            $(document).on('click', '#modifyButton', async function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const eventId = parseInt(urlParams.get('id'));
+                const event = await window.getEventDetails(eventId);
+                document.getElementById('updateEventTitle').value = event.name || '';
+                document.getElementById('updateEventDescription').value = event.description || '';
+                document.getElementById('updateEventDate').value = event.date || '';
+                document.getElementById('updateEventLocation').value = event.location || '';
+                document.getElementById('updateEventApproval').value = event.is_approved ? 'Approuvé' : 'Non approuvé';
+            });
+        });
+    </script>
+        <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = parseInt(urlParams.get('id'));
+            try {
+                const event = await window.getEventDetails(eventId);
+                if (event) {
+                    const eventDetails = `
                         <div class="col-md-4">
                             <div class="card shadow">
                                 <div class="card-body">
@@ -110,7 +210,7 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('event-details').innerHTML = eventDetails;
+                    document.getElementById('event-details').innerHTML += eventDetails;
                 } else {
                     document.getElementById('event-details').innerHTML = '<div class="col-12"><div class="alert alert-warning">Aucun événement trouvé.</div></div>';
                 }

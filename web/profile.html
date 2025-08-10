@@ -1,5 +1,48 @@
 <!DOCTYPE html>
 <html lang="fr">
+<script>
+    window.token = localStorage.getItem('token');
+    if (!window.token) {
+        window.location.href = 'login.html';
+    }
+</script>
+<div class="modal fade" id="updateProfileModal" tabindex="-1" role="dialog" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateProfileModalLabel">Modifier le profil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateProfileForm">
+                    <div class="form-group">
+                        <label for="updateFirstName">Prénom</label>
+                        <input type="text" class="form-control" id="updateFirstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateLastName">Nom</label>
+                        <input type="text" class="form-control" id="updateLastName" name="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateEmail">Email</label>
+                        <input type="email" class="form-control" id="updateEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePhone">Téléphone</label>
+                        <input type="text" class="form-control" id="updatePhone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateBirthdate">Date de naissance</label>
+                        <input type="date" class="form-control" id="updateBirthdate" name="birthdate">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,7 +85,9 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const userId = urlParams.get('id');
                 const user = await window.getAccountById(userId);
-                const profileDetail= `
+                //Make the userId global so every function can access it
+                window.userId = user.id;
+                const profileDetail = `
                     <div class="card-body text-center">
                         <img src="photo.jpg" class="rounded-circle" width="100" height="100" alt="Photo de profil">
                         <h5 class="card-title mt-2">${user.firstName} ${user.lastName}</h5>
@@ -50,12 +95,58 @@
                         <p class="card-text">${user.phone}</p>
                         <p class="card-text">${user.birthdate}</p>
                         <p class="card-text">ID: ${user.id}</p>
+                        <button class="btn btn-primary mt-2" id="modifyProfileButton" data-toggle="modal" data-target="#updateProfileModal">Modifier</button>
                         <button class="btn btn-danger mt-2" id="banButton" onclick="window.deleteAccount(${user.id})">Bannir</button>
                     </div>
-                `;
+                `; // <-- Close the template literal here!
                 document.getElementById('profile-details').innerHTML = profileDetail;
             });
-            </script>
+
+            // Add updateAccount function to window (should be implemented in your services/accountService.js)
+            if (!window.updateAccount) {
+                window.updateAccount = async function(userId, updateData) {
+                    if (!window.api) throw new Error('API not available');
+                    await window.api.put(`/v1/account/id/${userId}`, updateData);
+                };
+            }
+
+            // Modal logic for updating profile
+            document.addEventListener('DOMContentLoaded', function() {
+                const updateProfileForm = document.getElementById('updateProfileForm');
+                if (updateProfileForm) {
+                    updateProfileForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const userId = urlParams.get('id');
+                        const firstName = document.getElementById('updateFirstName').value;
+                        const lastName = document.getElementById('updateLastName').value;
+                        const email = document.getElementById('updateEmail').value;
+                        const phone = document.getElementById('updatePhone').value;
+                        const birthdate = document.getElementById('updateBirthdate').value;
+                        try {
+                            await window.updateAccount(userId, { firstName, lastName, email, phone, birthdate });
+                            $('#updateProfileModal').modal('hide');
+                            location.reload();
+                        } catch (err) {
+                            alert('Erreur lors de la mise à jour du profil.');
+                            console.error(err);
+                        }
+                    });
+                }
+
+                // Pre-fill modal fields when opening
+                $(document).on('click', '#modifyProfileButton', async function() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const userId = urlParams.get('id');
+                    const user = await window.getAccountById(userId);
+                    document.getElementById('updateFirstName').value = user.firstName || '';
+                    document.getElementById('updateLastName').value = user.lastName || '';
+                    document.getElementById('updateEmail').value = user.email || '';
+                    document.getElementById('updatePhone').value = user.phone || '';
+                    document.getElementById('updateBirthdate').value = user.birthdate ? user.birthdate.split('T')[0] : '';
+                });
+            });
+        </script>
         <div class="row">
             <div class="col-md-4">
                 <div class="card" id="profile-details">
