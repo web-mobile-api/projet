@@ -85,7 +85,6 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const userId = urlParams.get('id');
                 const user = await window.getAccountById(userId);
-                //Make the userId global so every function can access it
                 window.userId = user.id;
                 const profileDetail = `
                     <div class="card-body text-center">
@@ -98,19 +97,10 @@
                         <button class="btn btn-primary mt-2" id="modifyProfileButton" data-toggle="modal" data-target="#updateProfileModal">Modifier</button>
                         <button class="btn btn-danger mt-2" id="banButton" onclick="window.deleteAccount(${user.id})">Bannir</button>
                     </div>
-                `; // <-- Close the template literal here!
+                `;
                 document.getElementById('profile-details').innerHTML = profileDetail;
             });
 
-            // Add updateAccount function to window (should be implemented in your services/accountService.js)
-            if (!window.updateAccount) {
-                window.updateAccount = async function(userId, updateData) {
-                    if (!window.api) throw new Error('API not available');
-                    await window.api.put(`/v1/account/id/${userId}`, updateData);
-                };
-            }
-
-            // Modal logic for updating profile
             document.addEventListener('DOMContentLoaded', function() {
                 const updateProfileForm = document.getElementById('updateProfileForm');
                 if (updateProfileForm) {
@@ -134,7 +124,6 @@
                     });
                 }
 
-                // Pre-fill modal fields when opening
                 $(document).on('click', '#modifyProfileButton', async function() {
                     const urlParams = new URLSearchParams(window.location.search);
                     const userId = urlParams.get('id');

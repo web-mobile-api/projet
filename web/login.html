@@ -33,7 +33,6 @@
                                     const username = document.getElementById('username').value;
                                     const password = document.getElementById('password').value;
 
-                                    // Call your login API here
                                     const success = await window.loginUser(username, password);
                                     if (success) {
                                         window.location.href = 'Index.html';
