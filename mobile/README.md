@@ -15,6 +15,8 @@ Le Pre-dossier se trouve sous ./mobile/Pre-dossier.pdf, il contient toutes les m
 
 L'objectif de notre projet de groupe était de mettre en place une application mobile permettant de s'inscrire/créer des évènements à proximité.
 
+L'application n'est malheureusement pas totalement complète en terme de fonctionnalités et il se pourrait qu'il y ait quelques bugs liés à l'API (nous avons eu beaucoup de problème avec Docker et Podman pour l'API). Nous promettons de corriger tout ceux que nous trouverons ainsi que rajouter les potentielles fonctionnalités essentielles manquants pour l'examen oral. Nous nous excusons du désagrément causé.
+
 ## Partie Web:
 
 ...
